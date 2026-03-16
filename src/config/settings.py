@@ -169,15 +169,26 @@ class Settings(BaseSettings):
     enable_voice_messages: bool = Field(
         True, description="Enable voice message transcription"
     )
-    voice_provider: Literal["mistral", "openai"] = Field(
+    voice_provider: Literal["mistral", "openai", "local"] = Field(
         "mistral",
-        description="Voice transcription provider: 'mistral' or 'openai'",
+        description="Voice transcription provider: 'mistral', 'openai', or 'local' (faster-whisper)",
+    )
+    local_whisper_model: str = Field(
+        "small",
+        description="faster-whisper model size: tiny, base, small, medium, large-v3",
+    )
+    local_whisper_device: str = Field(
+        "cpu",
+        description="Device for local whisper: cpu or cuda",
     )
     mistral_api_key: Optional[SecretStr] = Field(
         None, description="Mistral API key for voice transcription"
     )
     openai_api_key: Optional[SecretStr] = Field(
         None, description="OpenAI API key for Whisper voice transcription"
+    )
+    openai_base_url: Optional[str] = Field(
+        None, description="Custom OpenAI-compatible base URL (e.g. Groq: https://api.groq.com/openai/v1)"
     )
     voice_transcription_model: Optional[str] = Field(
         None,
@@ -395,8 +406,8 @@ class Settings(BaseSettings):
         if v is None:
             return "mistral"
         provider = str(v).strip().lower()
-        if provider not in {"mistral", "openai"}:
-            raise ValueError("voice_provider must be one of ['mistral', 'openai']")
+        if provider not in {"mistral", "openai", "local"}:
+            raise ValueError("voice_provider must be one of ['mistral', 'openai', 'local']")
         return provider
 
     @field_validator("project_threads_chat_id", mode="before")
@@ -515,6 +526,8 @@ class Settings(BaseSettings):
         """API key environment variable required for the configured voice provider."""
         if self.voice_provider == "openai":
             return "OPENAI_API_KEY"
+        if self.voice_provider == "local":
+            return ""
         return "MISTRAL_API_KEY"
 
     @property
@@ -522,4 +535,6 @@ class Settings(BaseSettings):
         """Human-friendly label for the configured voice provider."""
         if self.voice_provider == "openai":
             return "OpenAI Whisper"
+        if self.voice_provider == "local":
+            return "Local faster-whisper"
         return "Mistral Voxtral"

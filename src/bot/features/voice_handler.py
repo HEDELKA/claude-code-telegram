@@ -22,12 +22,13 @@ class ProcessedVoice:
 
 
 class VoiceHandler:
-    """Transcribe Telegram voice messages using Mistral or OpenAI."""
+    """Transcribe Telegram voice messages using Mistral, OpenAI, or local faster-whisper."""
 
     def __init__(self, config: Settings):
         self.config = config
         self._mistral_client: Optional[Any] = None
         self._openai_client: Optional[Any] = None
+        self._local_model: Optional[Any] = None
 
     def _ensure_allowed_file_size(self, file_size: Optional[int]) -> None:
         """Reject files that exceed the configured max size."""
@@ -81,6 +82,8 @@ class VoiceHandler:
 
         if self.config.voice_provider == "openai":
             transcription = await self._transcribe_openai(voice_bytes)
+        elif self.config.voice_provider == "local":
+            transcription = await self._transcribe_local(voice_bytes)
         else:
             transcription = await self._transcribe_mistral(voice_bytes)
 
@@ -185,5 +188,52 @@ class VoiceHandler:
         if not api_key:
             raise RuntimeError("OpenAI API key is not configured.")
 
-        self._openai_client = AsyncOpenAI(api_key=api_key)
+        kwargs: dict = {"api_key": api_key}
+        if self.config.openai_base_url:
+            kwargs["base_url"] = self.config.openai_base_url
+        self._openai_client = AsyncOpenAI(**kwargs)
         return self._openai_client
+
+    async def _transcribe_local(self, voice_bytes: bytes) -> str:
+        """Transcribe audio using local faster-whisper (no API key needed)."""
+        import asyncio
+        import tempfile
+        import os
+
+        try:
+            from faster_whisper import WhisperModel
+        except ModuleNotFoundError as exc:
+            raise RuntimeError(
+                "Optional dependency 'faster-whisper' is missing. "
+                "Install with: pip install faster-whisper"
+            ) from exc
+
+        if self._local_model is None:
+            logger.info(
+                "Loading local whisper model",
+                model=self.config.local_whisper_model,
+                device=self.config.local_whisper_device,
+            )
+            self._local_model = WhisperModel(
+                self.config.local_whisper_model,
+                device=self.config.local_whisper_device,
+                compute_type="int8",
+            )
+
+        with tempfile.NamedTemporaryFile(suffix=".ogg", delete=False) as f:
+            f.write(voice_bytes)
+            tmp_path = f.name
+
+        try:
+            loop = asyncio.get_event_loop()
+            segments, _ = await loop.run_in_executor(
+                None,
+                lambda: self._local_model.transcribe(tmp_path, beam_size=5),
+            )
+            text = " ".join(seg.text for seg in segments).strip()
+        finally:
+            os.unlink(tmp_path)
+
+        if not text:
+            raise ValueError("Local whisper returned empty transcription.")
+        return text

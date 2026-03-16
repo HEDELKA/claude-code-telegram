@@ -411,35 +411,35 @@ class MessageOrchestrator:
         """Return bot commands appropriate for current mode."""
         if self.settings.agentic_mode:
             commands = [
-                BotCommand("start", "Start the bot"),
-                BotCommand("new", "Start a fresh session"),
-                BotCommand("status", "Show session status"),
-                BotCommand("verbose", "Set output verbosity (0/1/2)"),
-                BotCommand("repo", "List repos / switch workspace"),
-                BotCommand("restart", "Restart the bot"),
+                BotCommand("start", "Запустить бота"),
+                BotCommand("new", "Начать новую сессию"),
+                BotCommand("status", "Показать статус сессии"),
+                BotCommand("verbose", "Уровень детализации (0/1/2)"),
+                BotCommand("repo", "Список репозиториев / смена рабочей директории"),
+                BotCommand("restart", "Перезапустить бота"),
             ]
             if self.settings.enable_project_threads:
-                commands.append(BotCommand("sync_threads", "Sync project topics"))
+                commands.append(BotCommand("sync_threads", "Синхронизировать топики проектов"))
             return commands
         else:
             commands = [
-                BotCommand("start", "Start bot and show help"),
-                BotCommand("help", "Show available commands"),
-                BotCommand("new", "Clear context and start fresh session"),
-                BotCommand("continue", "Explicitly continue last session"),
-                BotCommand("end", "End current session and clear context"),
-                BotCommand("ls", "List files in current directory"),
-                BotCommand("cd", "Change directory (resumes project session)"),
-                BotCommand("pwd", "Show current directory"),
-                BotCommand("projects", "Show all projects"),
-                BotCommand("status", "Show session status"),
-                BotCommand("export", "Export current session"),
-                BotCommand("actions", "Show quick actions"),
-                BotCommand("git", "Git repository commands"),
-                BotCommand("restart", "Restart the bot"),
+                BotCommand("start", "Запустить бота и показать справку"),
+                BotCommand("help", "Показать доступные команды"),
+                BotCommand("new", "Очистить контекст и начать новую сессию"),
+                BotCommand("continue", "Явно продолжить последнюю сессию"),
+                BotCommand("end", "Завершить сессию и очистить контекст"),
+                BotCommand("ls", "Список файлов в текущей директории"),
+                BotCommand("cd", "Сменить директорию (возобновляет сессию проекта)"),
+                BotCommand("pwd", "Показать текущую директорию"),
+                BotCommand("projects", "Показать все проекты"),
+                BotCommand("status", "Показать статус сессии"),
+                BotCommand("export", "Экспортировать текущую сессию"),
+                BotCommand("actions", "Показать быстрые действия"),
+                BotCommand("git", "Команды Git"),
+                BotCommand("restart", "Перезапустить бота"),
             ]
             if self.settings.enable_project_threads:
-                commands.append(BotCommand("sync_threads", "Sync project topics"))
+                commands.append(BotCommand("sync_threads", "Синхронизировать топики проектов"))
             return commands
 
     # --- Agentic handlers ---

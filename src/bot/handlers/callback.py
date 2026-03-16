@@ -73,9 +73,9 @@ async def handle_callback_query(
             await handler(query, param, context)
         else:
             await query.edit_message_text(
-                "❌ <b>Unknown Action</b>\n\n"
-                "This button action is not recognized. "
-                "The bot may have been updated since this message was sent.",
+                "❌ <b>Неизвестное действие</b>\n\n"
+                "Это действие кнопки не распознано. "
+                "Возможно, бот был обновлён после отправки этого сообщения.",
                 parse_mode="HTML",
             )
 
@@ -89,16 +89,16 @@ async def handle_callback_query(
 
         try:
             await query.edit_message_text(
-                "❌ <b>Error Processing Action</b>\n\n"
-                "An error occurred while processing your request.\n"
-                "Please try again or use text commands.",
+                "❌ <b>Ошибка обработки действия</b>\n\n"
+                "При обработке вашего запроса произошла ошибка.\n"
+                "Попробуйте ещё раз или используйте текстовые команды.",
                 parse_mode="HTML",
             )
         except Exception:
             # If we can't edit the message, send a new one
             await query.message.reply_text(
-                "❌ <b>Error Processing Action</b>\n\n"
-                "An error occurred while processing your request.",
+                "❌ <b>Ошибка обработки действия</b>\n\n"
+                "При обработке вашего запроса произошла ошибка.",
                 parse_mode="HTML",
             )
 
@@ -141,7 +141,7 @@ async def handle_cd_callback(
             )
             if not valid:
                 await query.edit_message_text(
-                    f"❌ <b>Access Denied</b>\n\n{escape_html(error)}",
+                    f"❌ <b>Доступ запрещён</b>\n\n{escape_html(error)}",
                     parse_mode="HTML",
                 )
                 return
@@ -150,8 +150,8 @@ async def handle_cd_callback(
 
         if project_root and not _is_within_root(new_path, project_root):
             await query.edit_message_text(
-                "❌ <b>Access Denied</b>\n\n"
-                "In thread mode, navigation is limited to the current project root.",
+                "❌ <b>Доступ запрещён</b>\n\n"
+                "В режиме топиков навигация ограничена корнем текущего проекта.",
                 parse_mode="HTML",
             )
             return
@@ -159,8 +159,8 @@ async def handle_cd_callback(
         # Check if directory exists
         if not new_path.exists() or not new_path.is_dir():
             await query.edit_message_text(
-                f"❌ <b>Directory Not Found</b>\n\n"
-                f"The directory <code>{escape_html(project_name)}</code> no longer exists or is not accessible.",
+                f"❌ <b>Директория не найдена</b>\n\n"
+                f"Директория <code>{escape_html(project_name)}</code> больше не существует или недоступна.",
                 parse_mode="HTML",
             )
             return
@@ -176,17 +176,17 @@ async def handle_cd_callback(
             if existing_session:
                 context.user_data["claude_session_id"] = existing_session.session_id
                 resumed_session_info = (
-                    f"\n🔄 Resumed session <code>{escape_html(existing_session.session_id[:8])}...</code> "
-                    f"({existing_session.message_count} messages)"
+                    f"\n🔄 Сессия возобновлена <code>{escape_html(existing_session.session_id[:8])}...</code> "
+                    f"({existing_session.message_count} сообщений)"
                 )
             else:
                 context.user_data["claude_session_id"] = None
                 resumed_session_info = (
-                    "\n🆕 No existing session. Send a message to start a new one."
+                    "\n🆕 Существующая сессия не найдена. Отправьте сообщение для начала новой."
                 )
         else:
             context.user_data["claude_session_id"] = None
-            resumed_session_info = "\n🆕 Send a message to start a new session."
+            resumed_session_info = "\n🆕 Отправьте сообщение для начала новой сессии."
 
         # Send confirmation with new directory info
         relative_base = project_root or settings.approved_directory
@@ -211,8 +211,8 @@ async def handle_cd_callback(
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         await query.edit_message_text(
-            f"✅ <b>Directory Changed</b>\n\n"
-            f"📂 Current directory: <code>{escape_html(str(relative_display))}</code>"
+            f"✅ <b>Директория изменена</b>\n\n"
+            f"📂 Текущая директория: <code>{escape_html(str(relative_display))}</code>"
             f"{resumed_session_info}",
             parse_mode="HTML",
             reply_markup=reply_markup,
@@ -226,7 +226,7 @@ async def handle_cd_callback(
 
     except Exception as e:
         await query.edit_message_text(
-            f"❌ <b>Error changing directory</b>\n\n{escape_html(str(e))}",
+            f"❌ <b>Ошибка при смене директории</b>\n\n{escape_html(str(e))}",
             parse_mode="HTML",
         )
 
@@ -260,8 +260,8 @@ async def handle_action_callback(
         await handler(query, context)
     else:
         await query.edit_message_text(
-            f"❌ <b>Unknown Action: {escape_html(action_type)}</b>\n\n"
-            "This action is not implemented yet.",
+            f"❌ <b>Неизвестное действие: {escape_html(action_type)}</b>\n\n"
+            "Это действие ещё не реализовано.",
             parse_mode="HTML",
         )
 
@@ -272,17 +272,17 @@ async def handle_confirm_callback(
     """Handle confirmation dialogs."""
     if confirmation_type == "yes":
         await query.edit_message_text(
-            "✅ <b>Confirmed</b>\n\nAction will be processed.",
+            "✅ <b>Подтверждено</b>\n\nДействие будет выполнено.",
             parse_mode="HTML",
         )
     elif confirmation_type == "no":
         await query.edit_message_text(
-            "❌ <b>Cancelled</b>\n\nAction was cancelled.",
+            "❌ <b>Отменено</b>\n\nДействие отменено.",
             parse_mode="HTML",
         )
     else:
         await query.edit_message_text(
-            "❓ <b>Unknown confirmation response</b>",
+            "❓ <b>Неизвестный ответ подтверждения</b>",
             parse_mode="HTML",
         )
 
@@ -293,19 +293,19 @@ async def handle_confirm_callback(
 async def _handle_help_action(query, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle help action."""
     help_text = (
-        "🤖 <b>Quick Help</b>\n\n"
-        "<b>Navigation:</b>\n"
-        "• <code>/ls</code> - List files\n"
-        "• <code>/cd &lt;dir&gt;</code> - Change directory\n"
-        "• <code>/projects</code> - Show projects\n\n"
-        "<b>Sessions:</b>\n"
-        "• <code>/new</code> - New Claude session\n"
-        "• <code>/status</code> - Session status\n\n"
-        "<b>Tips:</b>\n"
-        "• Send any text to interact with Claude\n"
-        "• Upload files for code review\n"
-        "• Use buttons for quick actions\n\n"
-        "Use <code>/help</code> for detailed help."
+        "🤖 <b>Краткая справка</b>\n\n"
+        "<b>Навигация:</b>\n"
+        "• <code>/ls</code> - Список файлов\n"
+        "• <code>/cd &lt;dir&gt;</code> - Сменить директорию\n"
+        "• <code>/projects</code> - Показать проекты\n\n"
+        "<b>Сессии:</b>\n"
+        "• <code>/new</code> - Новая сессия Claude\n"
+        "• <code>/status</code> - Статус сессии\n\n"
+        "<b>Советы:</b>\n"
+        "• Отправьте любой текст для работы с Claude\n"
+        "• Загружайте файлы для проверки кода\n"
+        "• Используйте кнопки для быстрых действий\n\n"
+        "Используйте <code>/help</code> для подробной справки."
     )
 
     keyboard = [
@@ -332,7 +332,7 @@ async def _handle_show_projects_action(
             registry = context.bot_data.get("project_registry")
             if not registry:
                 await query.edit_message_text(
-                    "❌ <b>Project registry is not initialized.</b>",
+                    "❌ <b>Реестр проектов не инициализирован.</b>",
                     parse_mode="HTML",
                 )
                 return
@@ -340,8 +340,8 @@ async def _handle_show_projects_action(
             projects = registry.list_enabled()
             if not projects:
                 await query.edit_message_text(
-                    "📁 <b>No Projects Found</b>\n\n"
-                    "No enabled projects found in projects config.",
+                    "📁 <b>Проекты не найдены</b>\n\n"
+                    "Активные проекты не найдены в конфигурации.",
                     parse_mode="HTML",
                 )
                 return
@@ -356,7 +356,7 @@ async def _handle_show_projects_action(
             )
 
             await query.edit_message_text(
-                f"📁 <b>Configured Projects</b>\n\n{project_list}",
+                f"📁 <b>Настроенные проекты</b>\n\n{project_list}",
                 parse_mode="HTML",
             )
             return
@@ -369,9 +369,9 @@ async def _handle_show_projects_action(
 
         if not projects:
             await query.edit_message_text(
-                "📁 <b>No Projects Found</b>\n\n"
-                "No subdirectories found in your approved directory.\n"
-                "Create some directories to organize your projects!",
+                "📁 <b>Проекты не найдены</b>\n\n"
+                "В разрешённой директории не найдены поддиректории.\n"
+                "Создайте несколько директорий для организации проектов!",
                 parse_mode="HTML",
             )
             return
@@ -406,15 +406,15 @@ async def _handle_show_projects_action(
         )
 
         await query.edit_message_text(
-            f"📁 <b>Available Projects</b>\n\n"
+            f"📁 <b>Доступные проекты</b>\n\n"
             f"{project_list}\n\n"
-            f"Click a project to navigate to it:",
+            f"Нажмите на проект, чтобы перейти в него:",
             parse_mode="HTML",
             reply_markup=reply_markup,
         )
 
     except Exception as e:
-        await query.edit_message_text(f"❌ Error loading projects: {str(e)}")
+        await query.edit_message_text(f"❌ Ошибка загрузки проектов: {str(e)}")
 
 
 async def _handle_new_session_action(query, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -449,9 +449,9 @@ async def _handle_new_session_action(query, context: ContextTypes.DEFAULT_TYPE) 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await query.edit_message_text(
-        f"🆕 <b>New Claude Code Session</b>\n\n"
-        f"📂 Working directory: <code>{escape_html(str(relative_path))}/</code>\n\n"
-        f"Ready to help you code! Send me a message to get started:",
+        f"🆕 <b>Новая сессия Claude Code</b>\n\n"
+        f"📂 Рабочая директория: <code>{escape_html(str(relative_path))}/</code>\n\n"
+        f"Готов помочь с кодом! Отправьте сообщение для начала работы:",
         parse_mode="HTML",
         reply_markup=reply_markup,
     )
@@ -466,12 +466,12 @@ async def _handle_end_session_action(query, context: ContextTypes.DEFAULT_TYPE) 
 
     if not claude_session_id:
         await query.edit_message_text(
-            "ℹ️ <b>No Active Session</b>\n\n"
-            "There's no active Claude session to end.\n\n"
-            "<b>What you can do:</b>\n"
-            "• Use the button below to start a new session\n"
-            "• Check your session status\n"
-            "• Send any message to start a conversation",
+            "ℹ️ <b>Нет активной сессии</b>\n\n"
+            "Нет активной сессии Claude для завершения.\n\n"
+            "<b>Что можно сделать:</b>\n"
+            "• Используйте кнопку ниже для новой сессии\n"
+            "• Проверьте статус сессии\n"
+            "• Отправьте любое сообщение для начала разговора",
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup(
                 [
@@ -513,16 +513,16 @@ async def _handle_end_session_action(query, context: ContextTypes.DEFAULT_TYPE) 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await query.edit_message_text(
-        "✅ <b>Session Ended</b>\n\n"
-        f"Your Claude session has been terminated.\n\n"
-        f"<b>Current Status:</b>\n"
-        f"• Directory: <code>{escape_html(str(relative_path))}/</code>\n"
-        f"• Session: None\n"
-        f"• Ready for new commands\n\n"
-        f"<b>Next Steps:</b>\n"
-        f"• Start a new session\n"
-        f"• Check status\n"
-        f"• Send any message to begin a new conversation",
+        "✅ <b>Сессия завершена</b>\n\n"
+        f"Сессия Claude завершена.\n\n"
+        f"<b>Текущий статус:</b>\n"
+        f"• Директория: <code>{escape_html(str(relative_path))}/</code>\n"
+        f"• Сессия: Нет\n"
+        f"• Готово к новым командам\n\n"
+        f"<b>Дальнейшие действия:</b>\n"
+        f"• Начать новую сессию\n"
+        f"• Проверить статус\n"
+        f"• Отправить любое сообщение для нового разговора",
         parse_mode="HTML",
         reply_markup=reply_markup,
     )
@@ -541,8 +541,8 @@ async def _handle_continue_action(query, context: ContextTypes.DEFAULT_TYPE) -> 
     try:
         if not claude_integration:
             await query.edit_message_text(
-                "❌ <b>Claude Integration Not Available</b>\n\n"
-                "Claude integration is not properly configured.",
+                "❌ <b>Интеграция с Claude недоступна</b>\n\n"
+                "Интеграция с Claude настроена неверно.",
                 parse_mode="HTML",
             )
             return
@@ -553,10 +553,10 @@ async def _handle_continue_action(query, context: ContextTypes.DEFAULT_TYPE) -> 
         if claude_session_id:
             # Continue with the existing session (no prompt = use --continue)
             await query.edit_message_text(
-                f"🔄 <b>Continuing Session</b>\n\n"
-                f"Session ID: <code>{escape_html(claude_session_id[:8])}...</code>\n"
-                f"Directory: <code>{escape_html(str(current_dir.relative_to(settings.approved_directory)))}/</code>\n\n"
-                f"Continuing where you left off...",
+                f"🔄 <b>Продолжение сессии</b>\n\n"
+                f"ID сессии: <code>{escape_html(claude_session_id[:8])}...</code>\n"
+                f"Директория: <code>{escape_html(str(current_dir.relative_to(settings.approved_directory)))}/</code>\n\n"
+                f"Продолжаю с места остановки...",
                 parse_mode="HTML",
             )
 
@@ -569,8 +569,8 @@ async def _handle_continue_action(query, context: ContextTypes.DEFAULT_TYPE) -> 
         else:
             # No session in context, try to find the most recent session
             await query.edit_message_text(
-                "🔍 <b>Looking for Recent Session</b>\n\n"
-                "Searching for your most recent session in this directory...",
+                "🔍 <b>Поиск последней сессии</b>\n\n"
+                "Ищу вашу последнюю сессию в этой директории...",
                 parse_mode="HTML",
             )
 
@@ -586,20 +586,20 @@ async def _handle_continue_action(query, context: ContextTypes.DEFAULT_TYPE) -> 
 
             # Send Claude's response
             await query.message.reply_text(
-                f"✅ <b>Session Continued</b>\n\n"
+                f"✅ <b>Сессия продолжена</b>\n\n"
                 f"{escape_html(claude_response.content[:500])}{'...' if len(claude_response.content) > 500 else ''}",
                 parse_mode="HTML",
             )
         else:
             # No session found to continue
             await query.edit_message_text(
-                "❌ <b>No Session Found</b>\n\n"
-                f"No recent Claude session found in this directory.\n"
-                f"Directory: <code>{escape_html(str(current_dir.relative_to(settings.approved_directory)))}/</code>\n\n"
-                f"<b>What you can do:</b>\n"
-                f"• Use the button below to start a fresh session\n"
-                f"• Check your session status\n"
-                f"• Navigate to a different directory",
+                "❌ <b>Сессия не найдена</b>\n\n"
+                f"Недавняя сессия Claude в этой директории не найдена.\n"
+                f"Директория: <code>{escape_html(str(current_dir.relative_to(settings.approved_directory)))}/</code>\n\n"
+                f"<b>Что можно сделать:</b>\n"
+                f"• Используйте кнопку ниже для новой сессии\n"
+                f"• Проверьте статус сессии\n"
+                f"• Перейдите в другую директорию",
                 parse_mode="HTML",
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -618,9 +618,9 @@ async def _handle_continue_action(query, context: ContextTypes.DEFAULT_TYPE) -> 
     except Exception as e:
         logger.error("Error in continue action", error=str(e), user_id=user_id)
         await query.edit_message_text(
-            f"❌ <b>Error Continuing Session</b>\n\n"
-            f"An error occurred: <code>{escape_html(str(e))}</code>\n\n"
-            f"Try starting a new session instead.",
+            f"❌ <b>Ошибка продолжения сессии</b>\n\n"
+            f"Произошла ошибка: <code>{escape_html(str(e))}</code>\n\n"
+            f"Попробуйте начать новую сессию.",
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup(
                 [
@@ -662,16 +662,16 @@ async def _handle_status_action(query, context: ContextTypes.DEFAULT_TYPE) -> No
             usage_info = "💰 Usage: <i>Unable to retrieve</i>\n"
 
     status_lines = [
-        "📊 <b>Session Status</b>",
+        "📊 <b>Статус сессии</b>",
         "",
-        f"📂 Directory: <code>{escape_html(str(relative_path))}/</code>",
-        f"🤖 Claude Session: {'✅ Active' if claude_session_id else '❌ None'}",
+        f"📂 Директория: <code>{escape_html(str(relative_path))}/</code>",
+        f"🤖 Сессия Claude: {'✅ Активна' if claude_session_id else '❌ Нет'}",
         usage_info.rstrip(),
     ]
 
     if claude_session_id:
         status_lines.append(
-            f"🆔 Session ID: <code>{escape_html(claude_session_id[:8])}...</code>"
+            f"🆔 ID сессии: <code>{escape_html(claude_session_id[:8])}...</code>"
         )
 
     # Add action buttons
@@ -786,7 +786,7 @@ async def _handle_ls_action(query, context: ContextTypes.DEFAULT_TYPE) -> None:
         )
 
     except Exception as e:
-        await query.edit_message_text(f"❌ Error listing directory: {str(e)}")
+        await query.edit_message_text(f"❌ Ошибка при получении списка директорий: {str(e)}")
 
 
 async def _handle_start_coding_action(
@@ -794,14 +794,14 @@ async def _handle_start_coding_action(
 ) -> None:
     """Handle start coding action."""
     await query.edit_message_text(
-        "🚀 <b>Ready to Code!</b>\n\n"
-        "Send me any message to start coding with Claude:\n\n"
-        "<b>Examples:</b>\n"
-        '• <i>"Create a Python script that..."</i>\n'
-        '• <i>"Help me debug this code..."</i>\n'
-        '• <i>"Explain how this file works..."</i>\n'
-        "• Upload a file for review\n\n"
-        "I'm here to help with all your coding needs!",
+        "🚀 <b>Готов к работе!</b>\n\n"
+        "Отправьте любое сообщение для работы с Claude:\n\n"
+        "<b>Примеры:</b>\n"
+        '• <i>"Создай Python-скрипт, который..."</i>\n'
+        '• <i>"Помоги отладить этот код..."</i>\n'
+        '• <i>"Объясни, как работает этот файл..."</i>\n'
+        "• Загрузите файл для проверки\n\n"
+        "Я здесь, чтобы помочь с вашим кодом!",
         parse_mode="HTML",
     )
 
@@ -832,9 +832,9 @@ async def _handle_quick_actions_action(
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await query.edit_message_text(
-        "🛠️ <b>Quick Actions</b>\n\n"
-        "Choose a common development task:\n\n"
-        "<i>Note: These will be fully functional once Claude Code integration is complete.</i>",
+        "🛠️ <b>Быстрые действия</b>\n\n"
+        "Выберите типичную задачу разработки:\n\n"
+        "<i>Примечание: Будут полностью доступны после завершения интеграции Claude Code.</i>",
         parse_mode="HTML",
         reply_markup=reply_markup,
     )
@@ -855,14 +855,14 @@ async def _handle_refresh_ls_action(query, context: ContextTypes.DEFAULT_TYPE) -
 async def _handle_export_action(query, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle export action."""
     await query.edit_message_text(
-        "📤 <b>Export Session</b>\n\n"
-        "Session export functionality will be available once the storage layer is implemented.\n\n"
-        "<b>Planned features:</b>\n"
-        "• Export conversation history\n"
-        "• Save session state\n"
-        "• Share conversations\n"
-        "• Create session backups\n\n"
-        "<i>Coming in the next development phase!</i>",
+        "📤 <b>Экспорт сессии</b>\n\n"
+        "Функция экспорта будет доступна после реализации слоя хранения.\n\n"
+        "<b>Планируемые возможности:</b>\n"
+        "• Экспорт истории разговора\n"
+        "• Сохранение состояния сессии\n"
+        "• Обмен разговорами\n"
+        "• Резервные копии сессий\n\n"
+        "<i>Появится в следующей фазе разработки!</i>",
         parse_mode="HTML",
     )
 
@@ -878,8 +878,8 @@ async def handle_quick_action_callback(
 
     if not quick_actions:
         await query.edit_message_text(
-            "❌ <b>Quick Actions Not Available</b>\n\n"
-            "Quick actions feature is not available.",
+            "❌ <b>Быстрые действия недоступны</b>\n\n"
+            "Функция быстрых действий не доступна.",
             parse_mode="HTML",
         )
         return
@@ -888,8 +888,8 @@ async def handle_quick_action_callback(
     claude_integration: ClaudeIntegration = context.bot_data.get("claude_integration")
     if not claude_integration:
         await query.edit_message_text(
-            "❌ <b>Claude Integration Not Available</b>\n\n"
-            "Claude integration is not properly configured.",
+            "❌ <b>Интеграция с Claude недоступна</b>\n\n"
+            "Интеграция с Claude настроена неверно.",
             parse_mode="HTML",
         )
         return
@@ -904,17 +904,17 @@ async def handle_quick_action_callback(
         action = quick_actions.actions.get(action_id)
         if not action:
             await query.edit_message_text(
-                f"❌ <b>Action Not Found</b>\n\n"
-                f"Quick action '{escape_html(action_id)}' is not available.",
+                f"❌ <b>Действие не найдено</b>\n\n"
+                f"Быстрое действие '{escape_html(action_id)}' недоступно.",
                 parse_mode="HTML",
             )
             return
 
         # Execute the action
         await query.edit_message_text(
-            f"🚀 <b>Executing {action.icon} {escape_html(action.name)}</b>\n\n"
-            f"Running quick action in directory: <code>{escape_html(str(current_dir.relative_to(settings.approved_directory)))}/</code>\n\n"
-            f"Please wait...",
+            f"🚀 <b>Выполняю {action.icon} {escape_html(action.name)}</b>\n\n"
+            f"Запускаю действие в директории: <code>{escape_html(str(current_dir.relative_to(settings.approved_directory)))}/</code>\n\n"
+            f"Подождите...",
             parse_mode="HTML",
         )
 
@@ -928,25 +928,25 @@ async def handle_quick_action_callback(
             response_text = escape_html(claude_response.content)
             if len(response_text) > 4000:
                 response_text = (
-                    response_text[:4000] + "...\n\n<i>(Response truncated)</i>"
+                    response_text[:4000] + "...\n\n<i>(Ответ обрезан)</i>"
                 )
 
             await query.message.reply_text(
-                f"✅ <b>{action.icon} {escape_html(action.name)} Complete</b>\n\n{response_text}",
+                f"✅ <b>{action.icon} {escape_html(action.name)} завершено</b>\n\n{response_text}",
                 parse_mode="HTML",
             )
         else:
             await query.edit_message_text(
-                f"❌ <b>Action Failed</b>\n\n"
-                f"Failed to execute {escape_html(action.name)}. Please try again.",
+                f"❌ <b>Ошибка выполнения действия</b>\n\n"
+                f"Не удалось выполнить {escape_html(action.name)}. Попробуйте ещё раз.",
                 parse_mode="HTML",
             )
 
     except Exception as e:
         logger.error("Quick action execution failed", error=str(e), user_id=user_id)
         await query.edit_message_text(
-            f"❌ <b>Action Error</b>\n\n"
-            f"An error occurred while executing {escape_html(action_id)}: {escape_html(str(e))}",
+            f"❌ <b>Ошибка действия</b>\n\n"
+            f"При выполнении {escape_html(action_id)} произошла ошибка: {escape_html(str(e))}",
             parse_mode="HTML",
         )
 
@@ -962,8 +962,8 @@ async def handle_followup_callback(
 
     if not conversation_enhancer:
         await query.edit_message_text(
-            "❌ <b>Follow-up Not Available</b>\n\n"
-            "Conversation enhancement features are not available.",
+            "❌ <b>Уточнение недоступно</b>\n\n"
+            "Функции улучшения разговора не доступны.",
             parse_mode="HTML",
         )
         return
@@ -972,13 +972,13 @@ async def handle_followup_callback(
         # Get stored suggestions (this would need to be implemented in the enhancer)
         # For now, we'll provide a generic response
         await query.edit_message_text(
-            "💡 <b>Follow-up Suggestion Selected</b>\n\n"
-            "This follow-up suggestion will be implemented once the conversation "
-            "enhancement system is fully integrated with the message handler.\n\n"
-            "<b>Current Status:</b>\n"
-            "• Suggestion received ✅\n"
-            "• Integration pending 🔄\n\n"
-            "<i>You can continue the conversation by sending a new message.</i>",
+            "💡 <b>Уточнение выбрано</b>\n\n"
+            "Эта функция будет реализована после полной интеграции "
+            "системы улучшения разговора с обработчиком сообщений.\n\n"
+            "<b>Текущий статус:</b>\n"
+            "• Уточнение получено ✅\n"
+            "• Интеграция ожидается 🔄\n\n"
+            "<i>Вы можете продолжить разговор, отправив новое сообщение.</i>",
             parse_mode="HTML",
         )
 
@@ -997,8 +997,8 @@ async def handle_followup_callback(
         )
 
         await query.edit_message_text(
-            "❌ <b>Error Processing Follow-up</b>\n\n"
-            "An error occurred while processing your follow-up suggestion.",
+            "❌ <b>Ошибка обработки уточнения</b>\n\n"
+            "При обработке вашего уточнения произошла ошибка.",
             parse_mode="HTML",
         )
 
@@ -1013,15 +1013,15 @@ async def handle_conversation_callback(
     if action_type == "continue":
         # Remove suggestion buttons and show continue message
         await query.edit_message_text(
-            "✅ <b>Continuing Conversation</b>\n\n"
-            "Send me your next message to continue coding!\n\n"
-            "I'm ready to help with:\n"
-            "• Code review and debugging\n"
-            "• Feature implementation\n"
-            "• Architecture decisions\n"
-            "• Testing and optimization\n"
-            "• Documentation\n\n"
-            "<i>Just type your request or upload files.</i>",
+            "✅ <b>Разговор продолжается</b>\n\n"
+            "Отправьте следующее сообщение для продолжения работы!\n\n"
+            "Готов помочь с:\n"
+            "• Проверкой и отладкой кода\n"
+            "• Реализацией функций\n"
+            "• Архитектурными решениями\n"
+            "• Тестированием и оптимизацией\n"
+            "• Документацией\n\n"
+            "<i>Просто напишите запрос или загрузите файлы.</i>",
             parse_mode="HTML",
         )
 
@@ -1058,16 +1058,16 @@ async def handle_conversation_callback(
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         await query.edit_message_text(
-            "✅ <b>Conversation Ended</b>\n\n"
-            f"Your Claude session has been terminated.\n\n"
-            f"<b>Current Status:</b>\n"
-            f"• Directory: <code>{escape_html(str(relative_path))}/</code>\n"
-            f"• Session: None\n"
-            f"• Ready for new commands\n\n"
-            f"<b>Next Steps:</b>\n"
-            f"• Start a new session\n"
-            f"• Check status\n"
-            f"• Send any message to begin a new conversation",
+            "✅ <b>Разговор завершён</b>\n\n"
+            f"Сессия Claude завершена.\n\n"
+            f"<b>Текущий статус:</b>\n"
+            f"• Директория: <code>{escape_html(str(relative_path))}/</code>\n"
+            f"• Сессия: Нет\n"
+            f"• Готово к новым командам\n\n"
+            f"<b>Дальнейшие действия:</b>\n"
+            f"• Начать новую сессию\n"
+            f"• Проверить статус\n"
+            f"• Отправить любое сообщение для нового разговора",
             parse_mode="HTML",
             reply_markup=reply_markup,
         )
@@ -1076,8 +1076,8 @@ async def handle_conversation_callback(
 
     else:
         await query.edit_message_text(
-            f"❌ <b>Unknown Conversation Action: {escape_html(action_type)}</b>\n\n"
-            "This conversation action is not recognized.",
+            f"❌ <b>Неизвестное действие разговора: {escape_html(action_type)}</b>\n\n"
+            "Это действие разговора не распознано.",
             parse_mode="HTML",
         )
 
@@ -1092,8 +1092,8 @@ async def handle_git_callback(
 
     if not features or not features.is_enabled("git"):
         await query.edit_message_text(
-            "❌ <b>Git Integration Disabled</b>\n\n"
-            "Git integration feature is not enabled.",
+            "❌ <b>Git-интеграция отключена</b>\n\n"
+            "Функция интеграции с Git не включена.",
             parse_mode="HTML",
         )
         return
@@ -1106,8 +1106,8 @@ async def handle_git_callback(
         git_integration = features.get_git_integration()
         if not git_integration:
             await query.edit_message_text(
-                "❌ <b>Git Integration Unavailable</b>\n\n"
-                "Git integration service is not available.",
+                "❌ <b>Git-интеграция недоступна</b>\n\n"
+                "Сервис интеграции с Git не доступен.",
                 parse_mode="HTML",
             )
             return
@@ -1138,7 +1138,7 @@ async def handle_git_callback(
             diff_output = await git_integration.get_diff(current_dir)
 
             if not diff_output.strip():
-                diff_message = "📊 <b>Git Diff</b>\n\n<i>No changes to show.</i>"
+                diff_message = "📊 <b>Git Diff</b>\n\n<i>Изменений нет.</i>"
             else:
                 # Clean up diff output for Telegram
                 # Remove emoji symbols that interfere with parsing
@@ -1151,7 +1151,7 @@ async def handle_git_callback(
                 max_length = 3500
                 if len(clean_diff) > max_length:
                     clean_diff = (
-                        clean_diff[:max_length] + "\n\n... output truncated ..."
+                        clean_diff[:max_length] + "\n\n... вывод обрезан ..."
                     )
 
                 escaped_diff = escape_html(clean_diff)
@@ -1176,7 +1176,7 @@ async def handle_git_callback(
             commits = await git_integration.get_file_history(current_dir, ".")
 
             if not commits:
-                log_message = "📜 <b>Git Log</b>\n\n<i>No commits found.</i>"
+                log_message = "📜 <b>Git Log</b>\n\n<i>Коммиты не найдены.</i>"
             else:
                 log_message = "📜 <b>Git Log</b>\n\n"
                 for commit in commits[:10]:  # Show last 10 commits
@@ -1200,8 +1200,8 @@ async def handle_git_callback(
 
         else:
             await query.edit_message_text(
-                f"❌ <b>Unknown Git Action: {escape_html(git_action)}</b>\n\n"
-                "This git action is not recognized.",
+                f"❌ <b>Неизвестное Git-действие: {escape_html(git_action)}</b>\n\n"
+                "Это действие Git не распознано.",
                 parse_mode="HTML",
             )
 
@@ -1227,7 +1227,7 @@ async def handle_export_callback(
 
     if export_format == "cancel":
         await query.edit_message_text(
-            "📤 <b>Export Cancelled</b>\n\n" "Session export has been cancelled.",
+            "📤 <b>Экспорт отменён</b>\n\n" "Экспорт сессии отменён.",
             parse_mode="HTML",
         )
         return
@@ -1235,8 +1235,8 @@ async def handle_export_callback(
     session_exporter = features.get_session_export() if features else None
     if not session_exporter:
         await query.edit_message_text(
-            "❌ <b>Export Unavailable</b>\n\n"
-            "Session export service is not available.",
+            "❌ <b>Экспорт недоступен</b>\n\n"
+            "Сервис экспорта сессий не доступен.",
             parse_mode="HTML",
         )
         return
@@ -1245,7 +1245,7 @@ async def handle_export_callback(
     claude_session_id = context.user_data.get("claude_session_id")
     if not claude_session_id:
         await query.edit_message_text(
-            "❌ <b>No Active Session</b>\n\n" "There's no active session to export.",
+            "❌ <b>Нет активной сессии</b>\n\n" "Нет активной сессии для экспорта.",
             parse_mode="HTML",
         )
         return
@@ -1253,8 +1253,8 @@ async def handle_export_callback(
     try:
         # Show processing message
         await query.edit_message_text(
-            f"📤 <b>Exporting Session</b>\n\n"
-            f"Generating {escape_html(export_format.upper())} export...",
+            f"📤 <b>Экспорт сессии</b>\n\n"
+            f"Генерирую {escape_html(export_format.upper())} экспорт...",
             parse_mode="HTML",
         )
 
@@ -1273,19 +1273,19 @@ async def handle_export_callback(
             document=file_bytes,
             filename=exported_session.filename,
             caption=(
-                f"📤 <b>Session Export Complete</b>\n\n"
-                f"Format: {escape_html(exported_session.format.upper())}\n"
-                f"Size: {exported_session.size_bytes:,} bytes\n"
-                f"Created: {exported_session.created_at.strftime('%Y-%m-%d %H:%M:%S')}"
+                f"📤 <b>Экспорт сессии завершён</b>\n\n"
+                f"Формат: {escape_html(exported_session.format.upper())}\n"
+                f"Размер: {exported_session.size_bytes:,} байт\n"
+                f"Создан: {exported_session.created_at.strftime('%Y-%m-%d %H:%M:%S')}"
             ),
             parse_mode="HTML",
         )
 
         # Update the original message
         await query.edit_message_text(
-            f"✅ <b>Export Complete</b>\n\n"
-            f"Your session has been exported as {escape_html(exported_session.filename)}.\n"
-            f"Check the file above for your complete conversation history.",
+            f"✅ <b>Экспорт завершён</b>\n\n"
+            f"Сессия экспортирована как {escape_html(exported_session.filename)}.\n"
+            f"Проверьте файл выше для полной истории разговора.",
             parse_mode="HTML",
         )
 
@@ -1294,7 +1294,7 @@ async def handle_export_callback(
             "Export failed", error=str(e), user_id=user_id, format=export_format
         )
         await query.edit_message_text(
-            f"❌ <b>Export Failed</b>\n\n{escape_html(str(e))}",
+            f"❌ <b>Ошибка экспорта</b>\n\n{escape_html(str(e))}",
             parse_mode="HTML",
         )
 

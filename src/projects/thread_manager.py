@@ -320,25 +320,25 @@ class ProjectThreadManager:
     def guidance_message(mode: str = "group") -> str:
         """Guidance text for strict routing rejections."""
         context_label = (
-            "mapped project topic in this private chat"
+            "топике проекта в этом личном чате"
             if mode == "private"
-            else "mapped project forum topic"
+            else "топике форума проекта"
         )
         return (
-            "🚫 <b>Project Thread Required</b>\n\n"
-            "This bot is configured for strict project threads.\n"
-            f"Please send commands in a {context_label}.\n\n"
-            "If topics are missing or stale, run <code>/sync_threads</code>."
+            "🚫 <b>Требуется топик проекта</b>\n\n"
+            "Этот бот настроен для работы в топиках проектов.\n"
+            f"Пожалуйста, отправляйте команды в {context_label}.\n\n"
+            "Если топики отсутствуют или устарели, выполните <code>/sync_threads</code>."
         )
 
     @staticmethod
     def private_topics_unavailable_message() -> str:
         """User guidance when private chat topics are unavailable."""
         return (
-            "❌ <b>Private Topics Unavailable</b>\n\n"
-            "This bot requires topics in private chat, "
-            "but topics are not available.\n\n"
-            "Enable topics for this bot chat in Telegram, then run "
+            "❌ <b>Приватные топики недоступны</b>\n\n"
+            "Этот бот требует топики в личном чате, "
+            "но топики не доступны.\n\n"
+            "Включите топики для этого чата в Telegram, затем выполните "
             "<code>/sync_threads</code>."
         )
 
@@ -399,8 +399,8 @@ class ProjectThreadManager:
                     message_thread_id=message_thread_id,
                     text=(
                         f"🧵 <b>{project_name}</b>\n\n"
-                        "This project topic is ready. "
-                        "Send messages here to work on this project."
+                        "Топик проекта готов. "
+                        "Отправляйте сообщения здесь для работы с этим проектом."
                     ),
                     parse_mode="HTML",
                 ),

@@ -39,17 +39,17 @@ async def _format_progress_update(update_obj) -> Optional[str]:
             tool_name = update_obj.metadata.get("tool_name", "Tool")
 
         if update_obj.is_error():
-            return f"❌ <b>{tool_name} failed</b>\n\n<i>{update_obj.get_error_message()}</i>"
+            return f"❌ <b>{tool_name} завершился с ошибкой</b>\n\n<i>{update_obj.get_error_message()}</i>"
         else:
             execution_time = ""
             if update_obj.metadata and update_obj.metadata.get("execution_time_ms"):
                 time_ms = update_obj.metadata["execution_time_ms"]
                 execution_time = f" ({time_ms}ms)"
-            return f"✅ <b>{tool_name} completed</b>{execution_time}"
+            return f"✅ <b>{tool_name} выполнен</b>{execution_time}"
 
     elif update_obj.type == "progress":
         # Handle progress updates
-        progress_text = f"🔄 <b>{update_obj.content or 'Working...'}</b>"
+        progress_text = f"🔄 <b>{update_obj.content or 'Работаю...'}</b>"
 
         percentage = update_obj.get_progress_percentage()
         if percentage is not None:
@@ -62,20 +62,20 @@ async def _format_progress_update(update_obj) -> Optional[str]:
             step = update_obj.progress.get("step")
             total_steps = update_obj.progress.get("total_steps")
             if step and total_steps:
-                progress_text += f"\n\nStep {step} of {total_steps}"
+                progress_text += f"\n\nШаг {step} из {total_steps}"
 
         return progress_text
 
     elif update_obj.type == "error":
         # Handle error messages
-        return f"❌ <b>Error</b>\n\n<i>{update_obj.get_error_message()}</i>"
+        return f"❌ <b>Ошибка</b>\n\n<i>{update_obj.get_error_message()}</i>"
 
     elif update_obj.type == "assistant" and update_obj.tool_calls:
         # Show when tools are being called
         tool_names = update_obj.get_tool_names()
         if tool_names:
             tools_text = ", ".join(tool_names)
-            return f"🔧 <b>Using tools:</b> {tools_text}"
+            return f"🔧 <b>Использую инструменты:</b> {tools_text}"
 
     elif update_obj.type == "assistant" and update_obj.content:
         # Regular content updates with preview
@@ -84,14 +84,14 @@ async def _format_progress_update(update_obj) -> Optional[str]:
             if len(update_obj.content) > 150
             else update_obj.content
         )
-        return f"🤖 <b>Claude is working...</b>\n\n<i>{content_preview}</i>"
+        return f"🤖 <b>Claude работает...</b>\n\n<i>{content_preview}</i>"
 
     elif update_obj.type == "system":
         # System initialization or other system messages
         if update_obj.metadata and update_obj.metadata.get("subtype") == "init":
             tools_count = len(update_obj.metadata.get("tools", []))
             model = update_obj.metadata.get("model", "Claude")
-            return f"🚀 <b>Starting {model}</b> with {tools_count} tools available"
+            return f"🚀 <b>Запускаю {model}</b>, доступно инструментов: {tools_count}"
 
     return None
 
@@ -115,12 +115,12 @@ def _format_error_message(error: Exception | str) -> str:
 
     if isinstance(error_obj, ClaudeTimeoutError):
         return (
-            "⏰ <b>Request Timeout</b>\n\n"
+            "⏰ <b>Превышено время ожидания</b>\n\n"
             f"{escape_html(error_str)}\n\n"
-            "<b>What you can do:</b>\n"
-            "• Try breaking your request into smaller parts\n"
-            "• Avoid asking for very large file operations in one go\n"
-            "• Try again — transient slowdowns happen"
+            "<b>Что сделать:</b>\n"
+            "• Разбейте запрос на меньшие части\n"
+            "• Избегайте операций с очень большими файлами за раз\n"
+            "• Попробуйте снова — временные замедления бывают"
         )
 
     if isinstance(error_obj, ClaudeMCPError):
@@ -128,32 +128,32 @@ def _format_error_message(error: Exception | str) -> str:
         if error_obj.server_name:
             server_hint = f" (<code>{escape_html(error_obj.server_name)}</code>)"
         return (
-            f"🔌 <b>MCP Server Error</b>{server_hint}\n\n"
+            f"🔌 <b>Ошибка MCP сервера</b>{server_hint}\n\n"
             f"{escape_html(error_str)}\n\n"
-            "<b>What you can do:</b>\n"
-            "• Check that the MCP server is running and reachable\n"
-            "• Verify <code>MCP_CONFIG_PATH</code> points to a valid config\n"
-            "• Ask the administrator to check MCP server logs"
+            "<b>Что сделать:</b>\n"
+            "• Проверьте, что MCP сервер запущен и доступен\n"
+            "• Убедитесь, что <code>MCP_CONFIG_PATH</code> указывает на верный конфиг\n"
+            "• Попросите администратора проверить логи MCP сервера"
         )
 
     if isinstance(error_obj, ClaudeParsingError):
         return (
-            "📄 <b>Response Parsing Error</b>\n\n"
-            f"Claude returned a response that could not be parsed:\n"
+            "📄 <b>Ошибка разбора ответа</b>\n\n"
+            f"Claude вернул ответ, который не удалось разобрать:\n"
             f"<code>{escape_html(error_str[:300])}</code>\n\n"
-            "<b>What you can do:</b>\n"
-            "• Try your request again\n"
-            "• Rephrase your prompt if the problem persists"
+            "<b>Что сделать:</b>\n"
+            "• Повторите запрос\n"
+            "• Перефразируйте запрос, если проблема повторяется"
         )
 
     if isinstance(error_obj, ClaudeSessionError):
         return (
-            "🔄 <b>Session Error</b>\n\n"
+            "🔄 <b>Ошибка сессии</b>\n\n"
             f"{escape_html(error_str)}\n\n"
-            "<b>What you can do:</b>\n"
-            "• Use /new to start a fresh session\n"
-            "• Try your request again\n"
-            "• Use /status to check your current session"
+            "<b>Что сделать:</b>\n"
+            "• Используйте /new для новой сессии\n"
+            "• Повторите запрос\n"
+            "• Используйте /status для проверки текущей сессии"
         )
 
     if isinstance(error_obj, ClaudeProcessError):
@@ -167,9 +167,9 @@ def _format_error_message(error: Exception | str) -> str:
         if len(safe_error) > 500:
             safe_error = safe_error[:500] + "..."
         return (
-            f"❌ <b>Claude Error</b>\n\n"
+            f"❌ <b>Ошибка Claude</b>\n\n"
             f"{safe_error}\n\n"
-            f"Try again or use /new to start a fresh session."
+            f"Повторите попытку или используйте /new для новой сессии."
         )
 
     # --- Fall back to keyword matching (for string-only callers) --------
@@ -186,87 +186,87 @@ def _format_error_message(error: Exception | str) -> str:
 
     if "no conversation found" in error_lower:
         return (
-            "🔄 <b>Session Not Found</b>\n\n"
-            "The previous Claude session could not be found or has expired.\n\n"
-            "<b>What you can do:</b>\n"
-            "• Use /new to start a fresh session\n"
-            "• Try your request again\n"
-            "• Use /status to check your current session"
+            "🔄 <b>Сессия не найдена</b>\n\n"
+            "Предыдущая сессия Claude не найдена или истекла.\n\n"
+            "<b>Что сделать:</b>\n"
+            "• Используйте /new для новой сессии\n"
+            "• Повторите запрос\n"
+            "• Используйте /status для проверки текущей сессии"
         )
 
     if "rate limit" in error_lower:
         return (
-            "⏱️ <b>Rate Limit Reached</b>\n\n"
-            "Too many requests in a short time period.\n\n"
-            "<b>What you can do:</b>\n"
-            "• Wait a moment before trying again\n"
-            "• Use simpler requests\n"
-            "• Check your current usage with /status"
+            "⏱️ <b>Превышен лимит запросов</b>\n\n"
+            "Слишком много запросов за короткое время.\n\n"
+            "<b>Что сделать:</b>\n"
+            "• Подождите немного перед повтором\n"
+            "• Используйте более простые запросы\n"
+            "• Проверьте текущее использование через /status"
         )
 
     if "timed out after" in error_lower or "claude sdk timed out" in error_lower:
         return (
-            "⏰ <b>Request Timeout</b>\n\n"
+            "⏰ <b>Превышено время ожидания</b>\n\n"
             f"{escape_html(error_str)}\n\n"
-            "<b>What you can do:</b>\n"
-            "• Try breaking your request into smaller parts\n"
-            "• Avoid asking for very large file operations in one go\n"
-            "• Try again — transient slowdowns happen"
+            "<b>Что сделать:</b>\n"
+            "• Разбейте запрос на меньшие части\n"
+            "• Избегайте операций с очень большими файлами за раз\n"
+            "• Попробуйте снова — временные замедления бывают"
         )
 
     if "overloaded" in error_lower:
         return (
-            "🏗️ <b>Claude is Overloaded</b>\n\n"
-            "The Claude API is currently experiencing high demand.\n\n"
-            "<b>What you can do:</b>\n"
-            "• Wait a moment and try again\n"
-            "• Shorter prompts may succeed more easily"
+            "🏗️ <b>Claude перегружен</b>\n\n"
+            "API Claude сейчас испытывает высокую нагрузку.\n\n"
+            "<b>Что сделать:</b>\n"
+            "• Подождите немного и повторите\n"
+            "• Короткие запросы проходят легче"
         )
 
     if "invalid api key" in error_lower or "authentication_error" in error_lower:
         return (
-            "🔑 <b>API Authentication Error</b>\n\n"
-            "The API key used to connect to Claude is invalid or expired.\n\n"
-            "<b>What you can do:</b>\n"
-            "• Ask the administrator to verify the "
-            "<code>ANTHROPIC_API_KEY</code> setting\n"
-            "• Check that the API key has not been revoked"
+            "🔑 <b>Ошибка аутентификации API</b>\n\n"
+            "API ключ для подключения к Claude недействителен или истёк.\n\n"
+            "<b>Что сделать:</b>\n"
+            "• Попросите администратора проверить настройку "
+            "<code>ANTHROPIC_API_KEY</code>\n"
+            "• Убедитесь, что API ключ не был отозван"
         )
 
     # Match known SDK prefixes: "Failed to connect to Claude: ..."
     # and "MCP server connection failed: ..."
     if error_lower.startswith("failed to connect to claude"):
         return (
-            "🌐 <b>Connection Error</b>\n\n"
-            f"Could not connect to Claude:\n"
+            "🌐 <b>Ошибка соединения</b>\n\n"
+            f"Не удалось подключиться к Claude:\n"
             f"<code>{escape_html(error_str[:300])}</code>\n\n"
-            "<b>What you can do:</b>\n"
-            "• Check your network / firewall settings\n"
-            "• Verify the Claude CLI is installed and accessible\n"
-            "• Try again in a moment"
+            "<b>Что сделать:</b>\n"
+            "• Проверьте настройки сети / файрвола\n"
+            "• Убедитесь, что Claude CLI установлен и доступен\n"
+            "• Повторите через мгновение"
         )
 
     # Match known SDK prefix: "Claude Code not found. ..."
     if error_lower.startswith("claude code not found"):
         return (
-            "🔍 <b>Claude CLI Not Found</b>\n\n"
+            "🔍 <b>Claude CLI не найден</b>\n\n"
             f"{escape_html(error_str)}\n\n"
-            "<b>What you can do:</b>\n"
-            "• Ensure Claude Code is installed: "
+            "<b>Что сделать:</b>\n"
+            "• Установите Claude Code: "
             "<code>npm install -g @anthropic-ai/claude-code</code>\n"
-            "• Set the <code>CLAUDE_CLI_PATH</code> environment variable"
+            "• Задайте переменную окружения <code>CLAUDE_CLI_PATH</code>"
         )
 
     # Match known SDK prefixes: "MCP server error: ..." and
     # "MCP server connection failed: ..."
     if error_lower.startswith("mcp server"):
         return (
-            "🔌 <b>MCP Server Error</b>\n\n"
+            "🔌 <b>Ошибка MCP сервера</b>\n\n"
             f"{escape_html(error_str)}\n\n"
-            "<b>What you can do:</b>\n"
-            "• Check that the MCP server is running\n"
-            "• Verify MCP configuration\n"
-            "• Ask the administrator to check MCP server logs"
+            "<b>Что сделать:</b>\n"
+            "• Проверьте, что MCP сервер запущен\n"
+            "• Проверьте конфигурацию MCP\n"
+            "• Попросите администратора проверить логи MCP сервера"
         )
 
     # --- No match — show the raw error as-is ---
@@ -284,12 +284,12 @@ def _format_process_error(error_str: str) -> str:
         safe_error = safe_error[:500] + "..."
 
     return (
-        f"❌ <b>Claude Process Error</b>\n\n"
+        f"❌ <b>Ошибка процесса Claude</b>\n\n"
         f"{safe_error}\n\n"
-        "<b>What you can do:</b>\n"
-        "• Try your request again\n"
-        "• Use /new to start a fresh session if the problem persists\n"
-        "• Check /status for current session state"
+        "<b>Что сделать:</b>\n"
+        "• Повторите запрос\n"
+        "• Используйте /new для новой сессии, если проблема повторяется\n"
+        "• Проверьте /status для состояния текущей сессии"
     )
 
 
@@ -326,7 +326,7 @@ async def handle_text_message(
 
         # Create progress message
         progress_msg = await update.message.reply_text(
-            "🤔 Processing your request...",
+            "🤔 Обрабатываю запрос...",
             reply_to_message_id=update.message.message_id,
         )
 
@@ -336,9 +336,9 @@ async def handle_text_message(
 
         if not claude_integration:
             await update.message.reply_text(
-                "❌ <b>Claude integration not available</b>\n\n"
-                "The Claude Code integration is not properly configured. "
-                "Please contact the administrator.",
+                "❌ <b>Интеграция с Claude недоступна</b>\n\n"
+                "Интеграция Claude Code не настроена. "
+                "Обратитесь к администратору.",
                 parse_mode="HTML",
             )
             return
@@ -805,8 +805,8 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
         if not claude_integration:
             await claude_progress_msg.edit_text(
-                "❌ <b>Claude integration not available</b>\n\n"
-                "The Claude Code integration is not properly configured.",
+                "❌ <b>Интеграция с Claude недоступна</b>\n\n"
+                "Интеграция Claude Code не настроена.",
                 parse_mode="HTML",
             )
             return
@@ -932,8 +932,8 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
             if not claude_integration:
                 await claude_progress_msg.edit_text(
-                    "❌ <b>Claude integration not available</b>\n\n"
-                    "The Claude Code integration is not properly configured.",
+                    "❌ <b>Интеграция с Claude недоступна</b>\n\n"
+                    "Интеграция Claude Code не настроена.",
                     parse_mode="HTML",
                 )
                 return
@@ -998,16 +998,16 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     else:
         # Fall back to unsupported message
         await update.message.reply_text(
-            "📸 <b>Photo Upload</b>\n\n"
-            "Photo processing is not yet supported.\n\n"
-            "<b>Currently supported:</b>\n"
-            "• Text files (.py, .js, .md, etc.)\n"
-            "• Configuration files\n"
-            "• Documentation files\n\n"
-            "<b>Coming soon:</b>\n"
-            "• Image analysis\n"
-            "• Screenshot processing\n"
-            "• Diagram interpretation",
+            "📸 <b>Загрузка фото</b>\n\n"
+            "Обработка фото пока не поддерживается.\n\n"
+            "<b>Сейчас поддерживается:</b>\n"
+            "• Текстовые файлы (.py, .js, .md и т.д.)\n"
+            "• Файлы конфигурации\n"
+            "• Файлы документации\n\n"
+            "<b>Скоро:</b>\n"
+            "• Анализ изображений\n"
+            "• Обработка скриншотов\n"
+            "• Интерпретация диаграмм",
             parse_mode="HTML",
         )
 
@@ -1034,7 +1034,7 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
     try:
         progress_msg = await update.message.reply_text(
-            "🎙️ Transcribing voice message...", parse_mode="HTML"
+            "🎙️ Транскрибирую голосовое сообщение...", parse_mode="HTML"
         )
 
         voice = update.message.voice
@@ -1049,8 +1049,8 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         claude_integration = context.bot_data.get("claude_integration")
         if not claude_integration:
             await progress_msg.edit_text(
-                "❌ <b>Claude integration not available</b>\n\n"
-                "The Claude Code integration is not properly configured.",
+                "❌ <b>Интеграция с Claude недоступна</b>\n\n"
+                "Интеграция Claude Code не настроена.",
                 parse_mode="HTML",
             )
             return
@@ -1169,55 +1169,55 @@ async def _generate_placeholder_response(
         word in message_lower for word in ["list", "show", "see", "directory", "files"]
     ):
         response_text = (
-            f"🤖 <b>Claude Code Response</b> <i>(Placeholder)</i>\n\n"
-            f"I understand you want to see files. Try using the /ls command to list files "
-            f"in your current directory (<code>{relative_path}/</code>).\n\n"
-            f"<b>Available commands:</b>\n"
-            f"• /ls - List files\n"
-            f"• /cd &lt;dir&gt; - Change directory\n"
-            f"• /projects - Show projects\n\n"
-            f"<i>Note: Full Claude Code integration will be available in the next phase.</i>"
+            f"🤖 <b>Ответ Claude Code</b> <i>(Заглушка)</i>\n\n"
+            f"Вы хотите посмотреть файлы. Используйте команду /ls для просмотра файлов "
+            f"в текущем каталоге (<code>{relative_path}/</code>).\n\n"
+            f"<b>Доступные команды:</b>\n"
+            f"• /ls - Список файлов\n"
+            f"• /cd &lt;dir&gt; - Сменить каталог\n"
+            f"• /projects - Показать проекты\n\n"
+            f"<i>Примечание: Полная интеграция Claude Code будет доступна в следующей фазе.</i>"
         )
 
     elif any(word in message_lower for word in ["create", "generate", "make", "build"]):
         response_text = (
-            f"🤖 <b>Claude Code Response</b> <i>(Placeholder)</i>\n\n"
-            f"I understand you want to create something! Once the Claude Code integration "
-            f"is complete, I'll be able to:\n\n"
-            f"• Generate code files\n"
-            f"• Create project structures\n"
-            f"• Write documentation\n"
-            f"• Build complete applications\n\n"
-            f"<b>Current directory:</b> <code>{relative_path}/</code>\n\n"
-            f"<i>Full functionality coming soon!</i>"
+            f"🤖 <b>Ответ Claude Code</b> <i>(Заглушка)</i>\n\n"
+            f"Вы хотите что-то создать! После завершения интеграции Claude Code "
+            f"я смогу:\n\n"
+            f"• Генерировать файлы с кодом\n"
+            f"• Создавать структуры проектов\n"
+            f"• Писать документацию\n"
+            f"• Собирать полноценные приложения\n\n"
+            f"<b>Текущий каталог:</b> <code>{relative_path}/</code>\n\n"
+            f"<i>Полная функциональность скоро!</i>"
         )
 
     elif any(word in message_lower for word in ["help", "how", "what", "explain"]):
         response_text = (
-            "🤖 <b>Claude Code Response</b> <i>(Placeholder)</i>\n\n"
-            "I'm here to help! Try using /help for available commands.\n\n"
-            "<b>What I can do now:</b>\n"
-            "• Navigate directories (/cd, /ls, /pwd)\n"
-            "• Show projects (/projects)\n"
-            "• Manage sessions (/new, /status)\n\n"
-            "<b>Coming soon:</b>\n"
-            "• Full Claude Code integration\n"
-            "• Code generation and editing\n"
-            "• File operations\n"
-            "• Advanced programming assistance"
+            "🤖 <b>Ответ Claude Code</b> <i>(Заглушка)</i>\n\n"
+            "Рад помочь! Используйте /help для просмотра доступных команд.\n\n"
+            "<b>Что доступно сейчас:</b>\n"
+            "• Навигация по каталогам (/cd, /ls, /pwd)\n"
+            "• Просмотр проектов (/projects)\n"
+            "• Управление сессиями (/new, /status)\n\n"
+            "<b>Скоро:</b>\n"
+            "• Полная интеграция Claude Code\n"
+            "• Генерация и редактирование кода\n"
+            "• Файловые операции\n"
+            "• Расширенная помощь с программированием"
         )
 
     else:
         response_text = (
-            f"🤖 <b>Claude Code Response</b> <i>(Placeholder)</i>\n\n"
-            f"I received your message: \"{message_text[:100]}{'...' if len(message_text) > 100 else ''}\"\n\n"
-            f"<b>Current Status:</b>\n"
-            f"• Directory: <code>{relative_path}/</code>\n"
-            f"• Bot core: ✅ Active\n"
-            f"• Claude integration: 🔄 Coming soon\n\n"
-            f"Once Claude Code integration is complete, I'll be able to process your "
-            f"requests fully and help with coding tasks!\n\n"
-            f"For now, try the available commands like /ls, /cd, and /help."
+            f"🤖 <b>Ответ Claude Code</b> <i>(Заглушка)</i>\n\n"
+            f"Получено ваше сообщение: \"{message_text[:100]}{'...' if len(message_text) > 100 else ''}\"\n\n"
+            f"<b>Текущее состояние:</b>\n"
+            f"• Каталог: <code>{relative_path}/</code>\n"
+            f"• Ядро бота: ✅ Активно\n"
+            f"• Интеграция Claude: 🔄 Скоро\n\n"
+            f"После завершения интеграции Claude Code я смогу обрабатывать запросы "
+            f"и помогать с задачами программирования!\n\n"
+            f"Пока доступны команды /ls, /cd и /help."
         )
 
     return {"text": response_text, "parse_mode": "HTML"}

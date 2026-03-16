@@ -59,8 +59,8 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     if settings.enable_project_threads and settings.project_threads_mode == "private":
         if not _is_private_chat(update):
             await update.message.reply_text(
-                "🚫 <b>Private Topics Mode</b>\n\n"
-                "Use this bot in a private chat and run <code>/start</code> there.",
+                "🚫 <b>Режим приватных топиков</b>\n\n"
+                "Используйте этого бота в личном чате и запустите там <code>/start</code>.",
                 parse_mode="HTML",
             )
             return
@@ -72,8 +72,8 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     ):
         if manager is None:
             await update.message.reply_text(
-                "❌ <b>Project thread mode is misconfigured</b>\n\n"
-                "Thread manager is not initialized.",
+                "❌ <b>Неверная конфигурация топиков проектов</b>\n\n"
+                "Менеджер топиков не инициализирован.",
                 parse_mode="HTML",
             )
             return
@@ -84,12 +84,12 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
                 chat_id=update.effective_chat.id,
             )
             sync_section = (
-                "\n\n🧵 <b>Project Topics Synced</b>\n"
-                f"• Created: <b>{sync_result.created}</b>\n"
-                f"• Reused: <b>{sync_result.reused}</b>\n"
-                f"• Renamed: <b>{sync_result.renamed}</b>\n"
-                f"• Failed: <b>{sync_result.failed}</b>\n\n"
-                "Use a project topic thread to start coding."
+                "\n\n🧵 <b>Топики проектов синхронизированы</b>\n"
+                f"• Создано: <b>{sync_result.created}</b>\n"
+                f"• Повторно использовано: <b>{sync_result.reused}</b>\n"
+                f"• Переименовано: <b>{sync_result.renamed}</b>\n"
+                f"• Ошибок: <b>{sync_result.failed}</b>\n\n"
+                "Используйте топик проекта для работы с кодом."
             )
         except PrivateTopicsUnavailableError:
             await update.message.reply_text(
@@ -106,29 +106,29 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             return
         except Exception as e:
             sync_section = (
-                "\n\n⚠️ <b>Topic Sync Warning</b>\n"
+                "\n\n⚠️ <b>Предупреждение синхронизации топиков</b>\n"
                 f"{escape_html(str(e))}\n\n"
-                "Run <code>/sync_threads</code> to retry."
+                "Выполните <code>/sync_threads</code> для повтора."
             )
 
     welcome_message = (
-        f"👋 Welcome to Claude Code Telegram Bot, {escape_html(user.first_name)}!\n\n"
-        f"🤖 I help you access Claude Code remotely through Telegram.\n\n"
-        f"<b>Available Commands:</b>\n"
-        f"• <code>/help</code> - Show detailed help\n"
-        f"• <code>/new</code> - Start a new Claude session\n"
-        f"• <code>/ls</code> - List files in current directory\n"
-        f"• <code>/cd &lt;dir&gt;</code> - Change directory\n"
-        f"• <code>/projects</code> - Show available projects\n"
-        f"• <code>/status</code> - Show session status\n"
-        f"• <code>/actions</code> - Show quick actions\n"
-        f"• <code>/git</code> - Git repository commands\n\n"
-        f"<b>Quick Start:</b>\n"
-        f"1. Use <code>/projects</code> to see available projects\n"
-        f"2. Use <code>/cd &lt;project&gt;</code> to navigate to a project\n"
-        f"3. Send any message to start coding with Claude!\n\n"
-        f"🔒 Your access is secured and all actions are logged.\n"
-        f"📊 Use <code>/status</code> to check your usage limits."
+        f"👋 Добро пожаловать в Claude Code Telegram Bot, {escape_html(user.first_name)}!\n\n"
+        f"🤖 Я помогаю вам работать с Claude Code удалённо через Telegram.\n\n"
+        f"<b>Доступные команды:</b>\n"
+        f"• <code>/help</code> - Подробная справка\n"
+        f"• <code>/new</code> - Начать новую сессию Claude\n"
+        f"• <code>/ls</code> - Список файлов в текущей директории\n"
+        f"• <code>/cd &lt;dir&gt;</code> - Сменить директорию\n"
+        f"• <code>/projects</code> - Показать доступные проекты\n"
+        f"• <code>/status</code> - Статус сессии\n"
+        f"• <code>/actions</code> - Быстрые действия\n"
+        f"• <code>/git</code> - Команды Git-репозитория\n\n"
+        f"<b>Быстрый старт:</b>\n"
+        f"1. Используйте <code>/projects</code> для просмотра проектов\n"
+        f"2. Используйте <code>/cd &lt;project&gt;</code> для перехода в проект\n"
+        f"3. Отправьте любое сообщение, чтобы начать работу с Claude!\n\n"
+        f"🔒 Доступ защищён, все действия журналируются.\n"
+        f"📊 Используйте <code>/status</code> для проверки лимитов."
         f"{sync_section}"
     )
 
@@ -136,13 +136,13 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     keyboard = [
         [
             InlineKeyboardButton(
-                "📁 Show Projects", callback_data="action:show_projects"
+                "📁 Проекты", callback_data="action:show_projects"
             ),
-            InlineKeyboardButton("❓ Get Help", callback_data="action:help"),
+            InlineKeyboardButton("❓ Справка", callback_data="action:help"),
         ],
         [
-            InlineKeyboardButton("🆕 New Session", callback_data="action:new_session"),
-            InlineKeyboardButton("📊 Check Status", callback_data="action:status"),
+            InlineKeyboardButton("🆕 Новая сессия", callback_data="action:new_session"),
+            InlineKeyboardButton("📊 Статус", callback_data="action:status"),
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -161,45 +161,45 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /help command."""
     help_text = (
-        "🤖 <b>Claude Code Telegram Bot Help</b>\n\n"
-        "<b>Navigation Commands:</b>\n"
-        "• <code>/ls</code> - List files and directories\n"
-        "• <code>/cd &lt;directory&gt;</code> - Change to directory\n"
-        "• <code>/pwd</code> - Show current directory\n"
-        "• <code>/projects</code> - Show available projects\n\n"
-        "<b>Session Commands:</b>\n"
-        "• <code>/new</code> - Clear context and start a fresh session\n"
-        "• <code>/continue [message]</code> - Explicitly continue last session\n"
-        "• <code>/end</code> - End current session and clear context\n"
-        "• <code>/status</code> - Show session and usage status\n"
-        "• <code>/export</code> - Export session history\n"
-        "• <code>/actions</code> - Show context-aware quick actions\n"
-        "• <code>/git</code> - Git repository information\n\n"
-        "<b>Session Behavior:</b>\n"
-        "• Sessions are automatically maintained per project directory\n"
-        "• Switching directories with <code>/cd</code> resumes the session for that project\n"
-        "• Use <code>/new</code> or <code>/end</code> to explicitly clear session context\n"
-        "• Sessions persist across bot restarts\n\n"
-        "<b>Usage Examples:</b>\n"
-        "• <code>cd myproject</code> - Enter project directory\n"
-        "• <code>ls</code> - See what's in current directory\n"
-        "• <code>Create a simple Python script</code> - Ask Claude to code\n"
-        "• Send a file to have Claude review it\n\n"
-        "<b>File Operations:</b>\n"
-        "• Send text files (.py, .js, .md, etc.) for review\n"
-        "• Claude can read, modify, and create files\n"
-        "• All file operations are within your approved directory\n\n"
-        "<b>Security Features:</b>\n"
-        "• 🔒 Path traversal protection\n"
-        "• ⏱️ Rate limiting to prevent abuse\n"
-        "• 📊 Usage tracking and limits\n"
-        "• 🛡️ Input validation and sanitization\n\n"
-        "<b>Tips:</b>\n"
-        "• Use specific, clear requests for best results\n"
-        "• Check <code>/status</code> to monitor your usage\n"
-        "• Use quick action buttons when available\n"
-        "• File uploads are automatically processed by Claude\n\n"
-        "Need more help? Contact your administrator."
+        "🤖 <b>Справка по Claude Code Telegram Bot</b>\n\n"
+        "<b>Навигация:</b>\n"
+        "• <code>/ls</code> - Список файлов и директорий\n"
+        "• <code>/cd &lt;directory&gt;</code> - Перейти в директорию\n"
+        "• <code>/pwd</code> - Показать текущую директорию\n"
+        "• <code>/projects</code> - Показать доступные проекты\n\n"
+        "<b>Команды сессии:</b>\n"
+        "• <code>/new</code> - Сбросить контекст и начать новую сессию\n"
+        "• <code>/continue [сообщение]</code> - Продолжить последнюю сессию\n"
+        "• <code>/end</code> - Завершить сессию и очистить контекст\n"
+        "• <code>/status</code> - Статус сессии и лимиты использования\n"
+        "• <code>/export</code> - Экспортировать историю сессии\n"
+        "• <code>/actions</code> - Быстрые действия по контексту\n"
+        "• <code>/git</code> - Информация о Git-репозитории\n\n"
+        "<b>Поведение сессий:</b>\n"
+        "• Сессии автоматически сохраняются для каждой директории проекта\n"
+        "• Смена директории через <code>/cd</code> возобновляет сессию для этого проекта\n"
+        "• Используйте <code>/new</code> или <code>/end</code> для явного сброса контекста\n"
+        "• Сессии сохраняются при перезапуске бота\n\n"
+        "<b>Примеры использования:</b>\n"
+        "• <code>cd myproject</code> - Перейти в директорию проекта\n"
+        "• <code>ls</code> - Посмотреть содержимое текущей директории\n"
+        "• <code>Создай простой Python-скрипт</code> - Попросить Claude написать код\n"
+        "• Отправьте файл, чтобы Claude проверил его\n\n"
+        "<b>Работа с файлами:</b>\n"
+        "• Отправляйте текстовые файлы (.py, .js, .md и др.) для проверки\n"
+        "• Claude умеет читать, изменять и создавать файлы\n"
+        "• Все операции ограничены вашей разрешённой директорией\n\n"
+        "<b>Безопасность:</b>\n"
+        "• 🔒 Защита от обхода пути\n"
+        "• ⏱️ Ограничение частоты запросов\n"
+        "• 📊 Отслеживание и лимиты использования\n"
+        "• 🛡️ Валидация и санитизация ввода\n\n"
+        "<b>Советы:</b>\n"
+        "• Формулируйте запросы конкретно и чётко\n"
+        "• Проверяйте <code>/status</code> для мониторинга лимитов\n"
+        "• Используйте кнопки быстрых действий\n"
+        "• Загруженные файлы автоматически обрабатываются Claude\n\n"
+        "Нужна помощь? Обратитесь к администратору."
     )
 
     await update.message.reply_text(help_text, parse_mode="HTML")
@@ -213,26 +213,26 @@ async def sync_threads(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
     if not settings.enable_project_threads:
         await update.message.reply_text(
-            "ℹ️ <b>Project thread mode is disabled.</b>", parse_mode="HTML"
+            "ℹ️ <b>Режим топиков проектов отключён.</b>", parse_mode="HTML"
         )
         return
 
     manager = context.bot_data.get("project_threads_manager")
     if not manager:
         await update.message.reply_text(
-            "❌ <b>Project thread manager not initialized.</b>", parse_mode="HTML"
+            "❌ <b>Менеджер топиков проектов не инициализирован.</b>", parse_mode="HTML"
         )
         return
 
     status_msg = await update.message.reply_text(
-        "🔄 <b>Syncing project topics...</b>", parse_mode="HTML"
+        "🔄 <b>Синхронизация топиков проектов...</b>", parse_mode="HTML"
     )
 
     if settings.project_threads_mode == "private":
         if not _is_private_chat(update):
             await status_msg.edit_text(
-                "❌ <b>Private Thread Mode</b>\n\n"
-                "Run <code>/sync_threads</code> in your private chat with the bot.",
+                "❌ <b>Режим приватных топиков</b>\n\n"
+                "Выполните <code>/sync_threads</code> в личном чате с ботом.",
                 parse_mode="HTML",
             )
             return
@@ -240,8 +240,8 @@ async def sync_threads(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     else:
         if settings.project_threads_chat_id is None:
             await status_msg.edit_text(
-                "❌ <b>Group Thread Mode Misconfigured</b>\n\n"
-                "Set <code>PROJECT_THREADS_CHAT_ID</code> first.",
+                "❌ <b>Неверная конфигурация группового режима топиков</b>\n\n"
+                "Сначала задайте <code>PROJECT_THREADS_CHAT_ID</code>.",
                 parse_mode="HTML",
             )
             return
@@ -250,8 +250,8 @@ async def sync_threads(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
             or update.effective_chat.id != settings.project_threads_chat_id
         ):
             await status_msg.edit_text(
-                "❌ <b>Group Thread Mode</b>\n\n"
-                "Run <code>/sync_threads</code> in the configured project threads group.",
+                "❌ <b>Групповой режим топиков</b>\n\n"
+                "Выполните <code>/sync_threads</code> в настроенной группе топиков проектов.",
                 parse_mode="HTML",
             )
             return
@@ -260,8 +260,8 @@ async def sync_threads(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     try:
         if not settings.projects_config_path:
             await status_msg.edit_text(
-                "❌ <b>Project thread mode is misconfigured</b>\n\n"
-                "Set <code>PROJECTS_CONFIG_PATH</code> to a valid YAML file.",
+                "❌ <b>Неверная конфигурация топиков проектов</b>\n\n"
+                "Укажите в <code>PROJECTS_CONFIG_PATH</code> путь к валидному YAML-файлу.",
                 parse_mode="HTML",
             )
             if audit_logger:
@@ -277,14 +277,14 @@ async def sync_threads(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
         result = await manager.sync_topics(context.bot, chat_id=target_chat_id)
         await status_msg.edit_text(
-            "✅ <b>Project topic sync complete</b>\n\n"
-            f"• Created: <b>{result.created}</b>\n"
-            f"• Reused: <b>{result.reused}</b>\n"
-            f"• Renamed: <b>{result.renamed}</b>\n"
-            f"• Reopened: <b>{result.reopened}</b>\n"
-            f"• Closed: <b>{result.closed}</b>\n"
-            f"• Deactivated: <b>{result.deactivated}</b>\n"
-            f"• Failed: <b>{result.failed}</b>",
+            "✅ <b>Синхронизация топиков завершена</b>\n\n"
+            f"• Создано: <b>{result.created}</b>\n"
+            f"• Повторно использовано: <b>{result.reused}</b>\n"
+            f"• Переименовано: <b>{result.renamed}</b>\n"
+            f"• Переоткрыто: <b>{result.reopened}</b>\n"
+            f"• Закрыто: <b>{result.closed}</b>\n"
+            f"• Деактивировано: <b>{result.deactivated}</b>\n"
+            f"• Ошибок: <b>{result.failed}</b>",
             parse_mode="HTML",
         )
         if audit_logger:
@@ -298,7 +298,7 @@ async def sync_threads(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
             await audit_logger.log_command(user_id, "sync_threads", [], False)
     except Exception as e:
         await status_msg.edit_text(
-            f"❌ <b>Project topic sync failed</b>\n\n{escape_html(str(e))}",
+            f"❌ <b>Ошибка синхронизации топиков</b>\n\n{escape_html(str(e))}",
             parse_mode="HTML",
         )
         if audit_logger:
@@ -332,26 +332,26 @@ async def new_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     keyboard = [
         [
             InlineKeyboardButton(
-                "📝 Start Coding", callback_data="action:start_coding"
+                "📝 Начать работу", callback_data="action:start_coding"
             ),
             InlineKeyboardButton(
-                "📁 Change Project", callback_data="action:show_projects"
+                "📁 Сменить проект", callback_data="action:show_projects"
             ),
         ],
         [
             InlineKeyboardButton(
-                "📋 Quick Actions", callback_data="action:quick_actions"
+                "📋 Быстрые действия", callback_data="action:quick_actions"
             ),
-            InlineKeyboardButton("❓ Help", callback_data="action:help"),
+            InlineKeyboardButton("❓ Справка", callback_data="action:help"),
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
-        f"🆕 <b>New Claude Code Session</b>\n\n"
-        f"📂 Working directory: <code>{relative_path}/</code>{cleared_info}\n\n"
-        f"Context has been cleared. Send a message to start fresh, "
-        f"or use the buttons below:",
+        f"🆕 <b>Новая сессия Claude Code</b>\n\n"
+        f"📂 Рабочая директория: <code>{relative_path}/</code>{cleared_info}\n\n"
+        f"Контекст очищен. Отправьте сообщение для начала работы "
+        f"или воспользуйтесь кнопками ниже:",
         parse_mode="HTML",
         reply_markup=reply_markup,
     )
@@ -376,8 +376,8 @@ async def continue_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     try:
         if not claude_integration:
             await update.message.reply_text(
-                "❌ <b>Claude Integration Not Available</b>\n\n"
-                "Claude integration is not properly configured."
+                "❌ <b>Интеграция с Claude недоступна</b>\n\n"
+                "Интеграция с Claude настроена неверно."
             )
             return
 
@@ -387,10 +387,10 @@ async def continue_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         if claude_session_id:
             # We have a session in context, continue it directly
             status_msg = await update.message.reply_text(
-                f"🔄 <b>Continuing Session</b>\n\n"
-                f"Session ID: <code>{claude_session_id[:8]}...</code>\n"
-                f"Directory: <code>{current_dir.relative_to(settings.approved_directory)}/</code>\n\n"
-                f"{'Processing your message...' if prompt else 'Continuing where you left off...'}",
+                f"🔄 <b>Продолжение сессии</b>\n\n"
+                f"ID сессии: <code>{claude_session_id[:8]}...</code>\n"
+                f"Директория: <code>{current_dir.relative_to(settings.approved_directory)}/</code>\n\n"
+                f"{'Обрабатываю ваше сообщение...' if prompt else 'Продолжаю с места остановки...'}",
                 parse_mode="HTML",
             )
 
@@ -405,8 +405,8 @@ async def continue_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         else:
             # No session in context, try to find the most recent session
             status_msg = await update.message.reply_text(
-                "🔍 <b>Looking for Recent Session</b>\n\n"
-                "Searching for your most recent session in this directory...",
+                "🔍 <b>Поиск последней сессии</b>\n\n"
+                "Ищу вашу последнюю сессию в этой директории...",
                 parse_mode="HTML",
             )
 
@@ -451,22 +451,22 @@ async def continue_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         else:
             # No session found to continue
             await status_msg.edit_text(
-                "❌ <b>No Session Found</b>\n\n"
-                f"No recent Claude session found in this directory.\n"
-                f"Directory: <code>{current_dir.relative_to(settings.approved_directory)}/</code>\n\n"
-                f"<b>What you can do:</b>\n"
-                f"• Use <code>/new</code> to start a fresh session\n"
-                f"• Use <code>/status</code> to check your sessions\n"
-                f"• Navigate to a different directory with <code>/cd</code>",
+                "❌ <b>Сессия не найдена</b>\n\n"
+                f"Недавняя сессия Claude в этой директории не найдена.\n"
+                f"Директория: <code>{current_dir.relative_to(settings.approved_directory)}/</code>\n\n"
+                f"<b>Что можно сделать:</b>\n"
+                f"• Используйте <code>/new</code> для новой сессии\n"
+                f"• Используйте <code>/status</code> для проверки сессий\n"
+                f"• Перейдите в другую директорию через <code>/cd</code>",
                 parse_mode="HTML",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                "🆕 New Session", callback_data="action:new_session"
+                                "🆕 Новая сессия", callback_data="action:new_session"
                             ),
                             InlineKeyboardButton(
-                                "📊 Status", callback_data="action:status"
+                                "📊 Статус", callback_data="action:status"
                             ),
                         ]
                     ]
@@ -486,13 +486,13 @@ async def continue_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
         # Send error response
         await update.message.reply_text(
-            f"❌ <b>Error Continuing Session</b>\n\n"
-            f"An error occurred while trying to continue your session:\n\n"
+            f"❌ <b>Ошибка продолжения сессии</b>\n\n"
+            f"При попытке продолжить сессию произошла ошибка:\n\n"
             f"<code>{error_msg}</code>\n\n"
-            f"<b>Suggestions:</b>\n"
-            f"• Try starting a new session with <code>/new</code>\n"
-            f"• Check your session status with <code>/status</code>\n"
-            f"• Contact support if the issue persists",
+            f"<b>Рекомендации:</b>\n"
+            f"• Попробуйте начать новую сессию через <code>/new</code>\n"
+            f"• Проверьте статус сессии через <code>/status</code>\n"
+            f"• Обратитесь к администратору, если проблема повторяется",
             parse_mode="HTML",
         )
 
@@ -591,7 +591,7 @@ async def list_files(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             await audit_logger.log_command(user_id, "ls", [], True)
 
     except Exception as e:
-        error_msg = f"❌ Error listing directory: {str(e)}"
+        error_msg = f"❌ Ошибка при получении списка директорий: {str(e)}"
         await update.message.reply_text(error_msg)
 
         # Log failed command
@@ -611,14 +611,14 @@ async def change_directory(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     # Parse arguments
     if not context.args:
         await update.message.reply_text(
-            "<b>Usage:</b> <code>/cd &lt;directory&gt;</code>\n\n"
-            "<b>Examples:</b>\n"
-            "• <code>/cd myproject</code> - Enter subdirectory\n"
-            "• <code>/cd ..</code> - Go up one level\n"
-            "• <code>/cd /</code> - Go to root of approved directory\n\n"
-            "<b>Tips:</b>\n"
-            "• Use <code>/ls</code> to see available directories\n"
-            "• Use <code>/projects</code> to see all projects",
+            "<b>Использование:</b> <code>/cd &lt;directory&gt;</code>\n\n"
+            "<b>Примеры:</b>\n"
+            "• <code>/cd myproject</code> - Перейти в поддиректорию\n"
+            "• <code>/cd ..</code> - Перейти на уровень выше\n"
+            "• <code>/cd /</code> - Перейти в корень разрешённой директории\n\n"
+            "<b>Подсказки:</b>\n"
+            "• Используйте <code>/ls</code> для просмотра доступных директорий\n"
+            "• Используйте <code>/projects</code> для просмотра всех проектов",
             parse_mode="HTML",
         )
         return
@@ -647,7 +647,7 @@ async def change_directory(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
                 if not valid:
                     await update.message.reply_text(
-                        f"❌ <b>Access Denied</b>\n\n{error}"
+                        f"❌ <b>Доступ запрещён</b>\n\n{error}"
                     )
 
                     # Log security violation
@@ -665,8 +665,8 @@ async def change_directory(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
         if project_root and not _is_within_root(resolved_path, project_root):
             await update.message.reply_text(
-                "❌ <b>Access Denied</b>\n\n"
-                "In thread mode, navigation is limited to the current project root.",
+                "❌ <b>Доступ запрещён</b>\n\n"
+                "В режиме топиков навигация ограничена корнем текущего проекта.",
                 parse_mode="HTML",
             )
             return
@@ -674,13 +674,13 @@ async def change_directory(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         # Check if directory exists and is actually a directory
         if not resolved_path.exists():
             await update.message.reply_text(
-                f"❌ <b>Directory Not Found</b>\n\n<code>{target_path}</code> does not exist."
+                f"❌ <b>Директория не найдена</b>\n\n<code>{target_path}</code> не существует."
             )
             return
 
         if not resolved_path.is_dir():
             await update.message.reply_text(
-                f"❌ <b>Not a Directory</b>\n\n<code>{target_path}</code> is not a directory."
+                f"❌ <b>Не является директорией</b>\n\n<code>{target_path}</code> не является директорией."
             )
             return
 
@@ -699,14 +699,14 @@ async def change_directory(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             if existing_session:
                 context.user_data["claude_session_id"] = existing_session.session_id
                 resumed_session_info = (
-                    f"\n🔄 Resumed session <code>{existing_session.session_id[:8]}...</code> "
-                    f"({existing_session.message_count} messages)"
+                    f"\n🔄 Сессия возобновлена <code>{existing_session.session_id[:8]}...</code> "
+                    f"({existing_session.message_count} сообщений)"
                 )
             else:
                 # No session for this directory - clear the current one
                 context.user_data["claude_session_id"] = None
                 resumed_session_info = (
-                    "\n🆕 No existing session. Send a message to start a new one."
+                    "\n🆕 Существующая сессия не найдена. Отправьте сообщение для начала новой."
                 )
 
         # Send confirmation
@@ -714,8 +714,8 @@ async def change_directory(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         relative_path = resolved_path.relative_to(relative_base)
         relative_display = "/" if str(relative_path) == "." else f"{relative_path}/"
         await update.message.reply_text(
-            f"✅ <b>Directory Changed</b>\n\n"
-            f"📂 Current directory: <code>{relative_display}</code>"
+            f"✅ <b>Директория изменена</b>\n\n"
+            f"📂 Текущая директория: <code>{relative_display}</code>"
             f"{resumed_session_info}",
             parse_mode="HTML",
         )
@@ -725,7 +725,7 @@ async def change_directory(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             await audit_logger.log_command(user_id, "cd", [target_path], True)
 
     except Exception as e:
-        error_msg = f"❌ <b>Error changing directory</b>\n\n{str(e)}"
+        error_msg = f"❌ <b>Ошибка при смене директории</b>\n\n{str(e)}"
         await update.message.reply_text(error_msg, parse_mode="HTML")
 
         # Log failed command
@@ -757,9 +757,9 @@ async def print_working_directory(
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
-        f"📍 <b>Current Directory</b>\n\n"
-        f"Relative: <code>{relative_path}/</code>\n"
-        f"Absolute: <code>{absolute_path}</code>",
+        f"📍 <b>Текущая директория</b>\n\n"
+        f"Относительный путь: <code>{relative_path}/</code>\n"
+        f"Абсолютный путь: <code>{absolute_path}</code>",
         parse_mode="HTML",
         reply_markup=reply_markup,
     )
@@ -777,7 +777,7 @@ async def show_projects(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
                 registry = manager.registry
             if not registry:
                 await update.message.reply_text(
-                    "❌ <b>Project registry is not initialized.</b>",
+                    "❌ <b>Реестр проектов не инициализирован.</b>",
                     parse_mode="HTML",
                 )
                 return
@@ -785,8 +785,8 @@ async def show_projects(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             projects = registry.list_enabled()
             if not projects:
                 await update.message.reply_text(
-                    "📁 <b>No Projects Found</b>\n\n"
-                    "No enabled projects found in projects config.",
+                    "📁 <b>Проекты не найдены</b>\n\n"
+                    "Активные проекты не найдены в конфигурации.",
                     parse_mode="HTML",
                 )
                 return
@@ -801,7 +801,7 @@ async def show_projects(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             )
 
             await update.message.reply_text(
-                f"📁 <b>Configured Projects</b>\n\n{project_list}",
+                f"📁 <b>Настроенные проекты</b>\n\n{project_list}",
                 parse_mode="HTML",
             )
             return
@@ -814,9 +814,9 @@ async def show_projects(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
         if not projects:
             await update.message.reply_text(
-                "📁 <b>No Projects Found</b>\n\n"
-                "No subdirectories found in your approved directory.\n"
-                "Create some directories to organize your projects!"
+                "📁 <b>Проекты не найдены</b>\n\n"
+                "В разрешённой директории не найдены поддиректории.\n"
+                "Создайте несколько директорий для организации проектов!"
             )
             return
 
@@ -849,15 +849,15 @@ async def show_projects(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         project_list = "\n".join([f"• <code>{project}/</code>" for project in projects])
 
         await update.message.reply_text(
-            f"📁 <b>Available Projects</b>\n\n"
+            f"📁 <b>Доступные проекты</b>\n\n"
             f"{project_list}\n\n"
-            f"Click a project below to navigate to it:",
+            f"Нажмите на проект, чтобы перейти в него:",
             parse_mode="HTML",
             reply_markup=reply_markup,
         )
 
     except Exception as e:
-        await update.message.reply_text(f"❌ Error loading projects: {str(e)}")
+        await update.message.reply_text(f"❌ Ошибка загрузки проектов: {str(e)}")
         logger.error("Error in show_projects command", error=str(e))
 
 
@@ -900,25 +900,25 @@ async def session_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             )
             if existing:
                 resumable_info = (
-                    f"🔄 Resumable: <code>{existing.session_id[:8]}...</code> "
-                    f"({existing.message_count} msgs)"
+                    f"🔄 Возможно продолжить: <code>{existing.session_id[:8]}...</code> "
+                    f"({existing.message_count} сообщений)"
                 )
 
     # Format status message
     status_lines = [
-        "📊 <b>Session Status</b>",
+        "📊 <b>Статус сессии</b>",
         "",
-        f"📂 Directory: <code>{relative_path}/</code>",
-        f"🤖 Claude Session: {'✅ Active' if claude_session_id else '❌ None'}",
+        f"📂 Директория: <code>{relative_path}/</code>",
+        f"🤖 Сессия Claude: {'✅ Активна' if claude_session_id else '❌ Нет'}",
         usage_info.rstrip(),
-        f"🕐 Last Update: {update.message.date.strftime('%H:%M:%S UTC')}",
+        f"🕐 Обновлено: {update.message.date.strftime('%H:%M:%S UTC')}",
     ]
 
     if claude_session_id:
-        status_lines.append(f"🆔 Session ID: <code>{claude_session_id[:8]}...</code>")
+        status_lines.append(f"🆔 ID сессии: <code>{claude_session_id[:8]}...</code>")
     elif resumable_info:
         status_lines.append(resumable_info)
-        status_lines.append("💡 Session will auto-resume on your next message")
+        status_lines.append("💡 Сессия будет автоматически возобновлена при следующем сообщении")
 
     # Add action buttons
     keyboard = []
@@ -964,13 +964,13 @@ async def export_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     if not session_exporter:
         await update.message.reply_text(
-            "📤 <b>Export Session</b>\n\n"
-            "Session export functionality is not available.\n\n"
-            "<b>Planned features:</b>\n"
-            "• Export conversation history\n"
-            "• Save session state\n"
-            "• Share conversations\n"
-            "• Create session backups"
+            "📤 <b>Экспорт сессии</b>\n\n"
+            "Функция экспорта сессии недоступна.\n\n"
+            "<b>Планируемые возможности:</b>\n"
+            "• Экспорт истории разговора\n"
+            "• Сохранение состояния сессии\n"
+            "• Обмен разговорами\n"
+            "• Резервные копии сессий"
         )
         return
 
@@ -979,12 +979,12 @@ async def export_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     if not claude_session_id:
         await update.message.reply_text(
-            "❌ <b>No Active Session</b>\n\n"
-            "There's no active Claude session to export.\n\n"
-            "<b>What you can do:</b>\n"
-            "• Start a new session with <code>/new</code>\n"
-            "• Continue an existing session with <code>/continue</code>\n"
-            "• Check your status with <code>/status</code>"
+            "❌ <b>Нет активной сессии</b>\n\n"
+            "Нет активной сессии Claude для экспорта.\n\n"
+            "<b>Что можно сделать:</b>\n"
+            "• Начать новую сессию через <code>/new</code>\n"
+            "• Продолжить существующую сессию через <code>/continue</code>\n"
+            "• Проверить статус через <code>/status</code>"
         )
         return
 
@@ -1002,9 +1002,9 @@ async def export_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
-        "📤 <b>Export Session</b>\n\n"
-        f"Ready to export session: <code>{claude_session_id[:8]}...</code>\n\n"
-        "<b>Choose export format:</b>",
+        "📤 <b>Экспорт сессии</b>\n\n"
+        f"Готово к экспорту: <code>{claude_session_id[:8]}...</code>\n\n"
+        "<b>Выберите формат экспорта:</b>",
         parse_mode="HTML",
         reply_markup=reply_markup,
     )
@@ -1020,12 +1020,12 @@ async def end_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
     if not claude_session_id:
         await update.message.reply_text(
-            "ℹ️ <b>No Active Session</b>\n\n"
-            "There's no active Claude session to end.\n\n"
-            "<b>What you can do:</b>\n"
-            "• Use <code>/new</code> to start a new session\n"
-            "• Use <code>/status</code> to check your session status\n"
-            "• Send any message to start a conversation"
+            "ℹ️ <b>Нет активной сессии</b>\n\n"
+            "Нет активной сессии Claude для завершения.\n\n"
+            "<b>Что можно сделать:</b>\n"
+            "• Используйте <code>/new</code> для новой сессии\n"
+            "• Используйте <code>/status</code> для проверки статуса\n"
+            "• Отправьте любое сообщение для начала разговора"
         )
         return
 
@@ -1043,29 +1043,29 @@ async def end_session(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # Create quick action buttons
     keyboard = [
         [
-            InlineKeyboardButton("🆕 New Session", callback_data="action:new_session"),
+            InlineKeyboardButton("🆕 Новая сессия", callback_data="action:new_session"),
             InlineKeyboardButton(
-                "📁 Change Project", callback_data="action:show_projects"
+                "📁 Сменить проект", callback_data="action:show_projects"
             ),
         ],
         [
-            InlineKeyboardButton("📊 Status", callback_data="action:status"),
-            InlineKeyboardButton("❓ Help", callback_data="action:help"),
+            InlineKeyboardButton("📊 Статус", callback_data="action:status"),
+            InlineKeyboardButton("❓ Справка", callback_data="action:help"),
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
-        "✅ <b>Session Ended</b>\n\n"
-        f"Your Claude session has been terminated.\n\n"
-        f"<b>Current Status:</b>\n"
-        f"• Directory: <code>{relative_path}/</code>\n"
-        f"• Session: None\n"
-        f"• Ready for new commands\n\n"
-        f"<b>Next Steps:</b>\n"
-        f"• Start a new session with <code>/new</code>\n"
-        f"• Check status with <code>/status</code>\n"
-        f"• Send any message to begin a new conversation",
+        "✅ <b>Сессия завершена</b>\n\n"
+        f"Сессия Claude завершена.\n\n"
+        f"<b>Текущий статус:</b>\n"
+        f"• Директория: <code>{relative_path}/</code>\n"
+        f"• Сессия: Нет\n"
+        f"• Готово к новым командам\n\n"
+        f"<b>Дальнейшие действия:</b>\n"
+        f"• Начать новую сессию через <code>/new</code>\n"
+        f"• Проверить статус через <code>/status</code>\n"
+        f"• Отправьте любое сообщение для нового разговора",
         parse_mode="HTML",
         reply_markup=reply_markup,
     )
@@ -1246,7 +1246,7 @@ async def restart_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     user_id = update.effective_user.id
 
     await update.message.reply_text(
-        "🔄 <b>Restarting bot…</b>\n\nBack shortly.",
+        "🔄 <b>Перезапуск бота…</b>\n\nСкоро вернусь.",
         parse_mode="HTML",
     )
 

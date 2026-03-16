@@ -37,7 +37,7 @@ async def auth_middleware(handler: Callable, event: Any, data: Dict[str, Any]) -
         logger.error("Authentication manager not available in middleware context")
         if event.effective_message:
             await event.effective_message.reply_text(
-                "🔒 Authentication system unavailable. Please try again later."
+                "🔒 Система аутентификации недоступна. Попробуйте позже."
             )
         return
 
@@ -85,8 +85,8 @@ async def auth_middleware(handler: Callable, event: Any, data: Dict[str, Any]) -
         # Welcome message for new session
         if event.effective_message:
             await event.effective_message.reply_text(
-                f"🔓 Welcome! You are now authenticated.\n"
-                f"Session started at {datetime.now(UTC).strftime('%H:%M:%S UTC')}"
+                f"🔓 Добро пожаловать! Аутентификация прошла успешно.\n"
+                f"Сессия начата в {datetime.now(UTC).strftime('%H:%M:%S UTC')}"
             )
 
         # Continue to handler
@@ -98,11 +98,11 @@ async def auth_middleware(handler: Callable, event: Any, data: Dict[str, Any]) -
 
         if event.effective_message:
             await event.effective_message.reply_text(
-                "🔒 <b>Authentication Required</b>\n\n"
-                "You are not authorized to use this bot.\n"
-                "Please contact the administrator for access.\n\n"
-                f"Your Telegram ID: <code>{user_id}</code>\n"
-                "Share this ID with the administrator to request access.",
+                "🔒 <b>Требуется аутентификация</b>\n\n"
+                "Вы не авторизованы для использования этого бота.\n"
+                "Обратитесь к администратору.\n\n"
+                f"Ваш Telegram ID: <code>{user_id}</code>\n"
+                "Передайте этот ID администратору для получения доступа.",
                 parse_mode="HTML",
             )
         return  # Stop processing
@@ -119,7 +119,7 @@ async def require_auth(handler: Callable, event: Any, data: Dict[str, Any]) -> A
     if not auth_manager or not auth_manager.is_authenticated(user_id):
         if event.effective_message:
             await event.effective_message.reply_text(
-                "🔒 Authentication required to use this command."
+                "🔒 Для использования этой команды требуется аутентификация."
             )
         return
 
@@ -137,14 +137,14 @@ async def admin_required(handler: Callable, event: Any, data: Dict[str, Any]) ->
 
     if not auth_manager or not auth_manager.is_authenticated(user_id):
         if event.effective_message:
-            await event.effective_message.reply_text("🔒 Authentication required.")
+            await event.effective_message.reply_text("🔒 Требуется аутентификация.")
         return
 
     session = auth_manager.get_session(user_id)
     if not session or not session.user_info:
         if event.effective_message:
             await event.effective_message.reply_text(
-                "🔒 Session information unavailable."
+                "🔒 Информация о сессии недоступна."
             )
         return
 
@@ -153,8 +153,8 @@ async def admin_required(handler: Callable, event: Any, data: Dict[str, Any]) ->
     if "admin" not in permissions:
         if event.effective_message:
             await event.effective_message.reply_text(
-                "🔒 <b>Admin Access Required</b>\n\n"
-                "This command requires administrator privileges.",
+                "🔒 <b>Требуются права администратора</b>\n\n"
+                "Эта команда требует прав администратора.",
                 parse_mode="HTML",
             )
         return

@@ -506,7 +506,7 @@ class MessageOrchestrator:
         context.user_data["session_started"] = True
         context.user_data["force_new_session"] = True
 
-        await update.message.reply_text("Session reset. What's next?")
+        await update.message.reply_text("Сессия сброшена. Что дальше?")
 
     async def agentic_status(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -518,7 +518,7 @@ class MessageOrchestrator:
         dir_display = str(current_dir)
 
         session_id = context.user_data.get("claude_session_id")
-        session_status = "active" if session_id else "none"
+        session_status = "активна" if session_id else "нет"
 
         # Cost info
         cost_str = ""
@@ -533,7 +533,7 @@ class MessageOrchestrator:
                 pass
 
         await update.message.reply_text(
-            f"📂 {dir_display} · Session: {session_status}{cost_str}"
+            f"📂 {dir_display} · Сессия: {session_status}{cost_str}"
         )
 
     def _get_verbose_level(self, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -550,13 +550,13 @@ class MessageOrchestrator:
         args = update.message.text.split()[1:] if update.message.text else []
         if not args:
             current = self._get_verbose_level(context)
-            labels = {0: "quiet", 1: "normal", 2: "detailed"}
+            labels = {0: "тихий", 1: "обычный", 2: "подробный"}
             await update.message.reply_text(
-                f"Verbosity: <b>{current}</b> ({labels.get(current, '?')})\n\n"
-                "Usage: <code>/verbose 0|1|2</code>\n"
-                "  0 = quiet (final response only)\n"
-                "  1 = normal (tools + reasoning)\n"
-                "  2 = detailed (tools with inputs + reasoning)",
+                f"Детализация: <b>{current}</b> ({labels.get(current, '?')})\n\n"
+                "Использование: <code>/verbose 0|1|2</code>\n"
+                "  0 = тихий (только финальный ответ)\n"
+                "  1 = обычный (инструменты + рассуждения)\n"
+                "  2 = подробный (инструменты с вводом + рассуждения)",
                 parse_mode="HTML",
             )
             return
@@ -567,14 +567,14 @@ class MessageOrchestrator:
                 raise ValueError
         except ValueError:
             await update.message.reply_text(
-                "Please use: /verbose 0, /verbose 1, or /verbose 2"
+                "Используйте: /verbose 0, /verbose 1 или /verbose 2"
             )
             return
 
         context.user_data["verbose_level"] = level
-        labels = {0: "quiet", 1: "normal", 2: "detailed"}
+        labels = {0: "тихий", 1: "обычный", 2: "подробный"}
         await update.message.reply_text(
-            f"Verbosity set to <b>{level}</b> ({labels[level]})",
+            f"Детализация установлена: <b>{level}</b> ({labels[level]})",
             parse_mode="HTML",
         )
 
@@ -586,10 +586,10 @@ class MessageOrchestrator:
     ) -> str:
         """Build the progress message text based on activity so far."""
         if not activity_log:
-            return "Working..."
+            return "Работаю..."
 
         elapsed = time.time() - start_time
-        lines: List[str] = [f"Working... ({elapsed:.0f}s)\n"]
+        lines: List[str] = [f"Работаю... ({elapsed:.0f}с)\n"]
 
         for entry in activity_log[-15:]:  # Show last 15 entries max
             kind = entry.get("kind", "tool")
@@ -885,12 +885,12 @@ class MessageOrchestrator:
         await chat.send_action("typing")
 
         verbose_level = self._get_verbose_level(context)
-        progress_msg = await update.message.reply_text("Working...")
+        progress_msg = await update.message.reply_text("Работаю...")
 
         claude_integration = context.bot_data.get("claude_integration")
         if not claude_integration:
             await progress_msg.edit_text(
-                "Claude integration not available. Check configuration."
+                "Интеграция с Claude недоступна. Проверьте конфигурацию."
             )
             return
 
@@ -1111,7 +1111,7 @@ class MessageOrchestrator:
 
         chat = update.message.chat
         await chat.send_action("typing")
-        progress_msg = await update.message.reply_text("Working...")
+        progress_msg = await update.message.reply_text("Работаю...")
 
         # Try enhanced file handler, fall back to basic
         features = context.bot_data.get("features")
@@ -1151,7 +1151,7 @@ class MessageOrchestrator:
         claude_integration = context.bot_data.get("claude_integration")
         if not claude_integration:
             await progress_msg.edit_text(
-                "Claude integration not available. Check configuration."
+                "Интеграция с Claude недоступна. Проверьте конфигурацию."
             )
             return
 
@@ -1269,12 +1269,12 @@ class MessageOrchestrator:
         image_handler = features.get_image_handler() if features else None
 
         if not image_handler:
-            await update.message.reply_text("Photo processing is not available.")
+            await update.message.reply_text("Обработка фото недоступна.")
             return
 
         chat = update.message.chat
         await chat.send_action("typing")
-        progress_msg = await update.message.reply_text("Working...")
+        progress_msg = await update.message.reply_text("Работаю...")
 
         try:
             photo = update.message.photo[-1]
@@ -1313,7 +1313,7 @@ class MessageOrchestrator:
 
         chat = update.message.chat
         await chat.send_action("typing")
-        progress_msg = await update.message.reply_text("Transcribing...")
+        progress_msg = await update.message.reply_text("Транскрибирую...")
 
         try:
             voice = update.message.voice
@@ -1321,7 +1321,7 @@ class MessageOrchestrator:
                 voice, update.message.caption
             )
 
-            await progress_msg.edit_text("Working...")
+            await progress_msg.edit_text("Работаю...")
             await self._handle_agentic_media_message(
                 update=update,
                 context=context,
@@ -1353,7 +1353,7 @@ class MessageOrchestrator:
         claude_integration = context.bot_data.get("claude_integration")
         if not claude_integration:
             await progress_msg.edit_text(
-                "Claude integration not available. Check configuration."
+                "Интеграция с Claude недоступна. Проверьте конфигурацию."
             )
             return
 
@@ -1453,10 +1453,10 @@ class MessageOrchestrator:
     def _voice_unavailable_message(self) -> str:
         """Return provider-aware guidance when voice feature is unavailable."""
         return (
-            "Voice processing is not available. "
-            f"Set {self.settings.voice_provider_api_key_env} "
-            f"for {self.settings.voice_provider_display_name} and install "
-            'voice extras with: pip install "claude-code-telegram[voice]"'
+            "Голосовые сообщения недоступны. "
+            f"Установите {self.settings.voice_provider_api_key_env} "
+            f"для {self.settings.voice_provider_display_name} и установите: "
+            'pip install "claude-code-telegram[voice]"'
         )
 
     async def agentic_repo(
